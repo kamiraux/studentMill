@@ -1,0 +1,87 @@
+MOULETTE
+[O] Sandboxing
+    [X] User rights sandbox
+    [O] Timeout management
+        [X] Absolute timeout
+        [X] Execution timeout
+        [ ] Sum of children execution timeout
+    [ ] Network isolation
+    [ ] Syscall catch
+    [ ] Memory limit management
+
+[X] Use a config file
+
+[X] Pre process
+    [X] Pre-compilation of test files
+        [X] Using test directory configure and makefile
+        [X] Using configure and makefile from the compilation unit system (files
+            in test directory take precedence)
+    [X] Execution of script to generate test execution commands
+
+[O] Computation for each student
+    [X] First treatment on tarball
+        [X] Removing of 'check' folde
+    [O] Sanity check
+        [X] AUTHORS
+        [ ] Dirty files
+    [ ] Coding style check
+    [X] Creation of isolated space
+    [O] Compilation
+        [O] Compilation units system
+            [ ] Isolation of student calls
+        [O] Post compilation check
+            [X] Presence of expected files
+            [X] Usage of forbidden functions
+            [ ] Execution of check script
+    [O] Execution of tests
+        [O] Isolated environment
+            [X] For each test
+            [ ] For subtests
+        [X] Link step
+            [X] Using test directory configure and makefile
+            [X] Using configure and makefile from the test unit system (files
+                in test directory take precedence)
+            [ ] Check of expected outputs
+        [O] Copy of test data
+            [X] Independant for each test
+            [ ] Independant for each subtest
+            [O] Copy only required data
+                [X] Based on test requirements
+                [ ] Based on test unit requirements (useful?)
+                [X] Possibility to copy all for a test
+                [X] Possibility to copy nothing for a test
+            [X] Setting appropriate rights to test dada files
+        [X] Pre-test script execution
+            [X] Using test directory script
+            [X] Using script from the test unit system (files
+                in test directory take precedence)
+        [X] Timeout computation # Refer to Timeout management in sandboxing section
+            [X] Using test directory timeout
+            [X] Using timeout from the test unit system (files
+                in test directory take precedence)
+        [O] Launch test
+            [O] Subtests
+                [X] Launch each subtest
+                [ ] Possibility to have subtest using subfolders
+            [X] Usage of IO files
+                [X] Standard input file (STDIN)
+                [X] Standard output file (STDOUT)
+                [X] Standard error file (STDERR)
+                [X] Return value file (return value or id of received signal)
+            [X] Kill all remaining processes after test
+        [O] Results Computation
+            [X] Using test directory script for result computation
+            [X] Using script from the test unit system (files
+                in test directory take precedence)
+            [O] Standard result computation using diff
+                [X] Test with all IO files
+                [X] Check only if file is present in test directory
+                [O] Subtests
+                    [X] Check for each subtest
+                    [ ] Possibility to have subtest using subfolders
+                [X] Generate error message for trace
+                [X] Limit size of each diff
+        [X] Delete test data after usage to reduce the space used on the disk
+    [X] Generate trace
+        [X] Call trace generator
+        [X] Possibility to have multiple fomat of trace using a trace generator for each one

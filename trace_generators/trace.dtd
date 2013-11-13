@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!ELEMENT trace (info*,group+)>
+  <!ATTLIST trace type (defense|mill) "mill">
+  <!ATTLIST trace version CDATA "1">
+
+<!ELEMENT info (#CDATA)>
+  <!ATTLIST info name CDATA #REQUIRED>
+
+<!ELEMENT group (group*,eval+)>
+  <!ATTLIST group id ID #REQUIRED>
+  <!ATTLIST group name CDATA #IMPLIED>
+
+<!ELEMENT eval (value+,name?,statut?,log*,who?)>
+  <!ATTLIST eval id ID #REQUIRED>
+  <!ATTLIST eval type (test|question) "test">
+
+<!ELEMENT name (#CDATA)>
+
+<!ELEMENT statut (#CDATA)>
+
+<!ELEMENT log (#CDATA)>
+  <!ATTLIST log type #IMPLIED "stdout">
+
+<!ELEMENT who (#CDATA)>
+  <!ATTLIST who type (login|group) "login">
+
+<!ELEMENT value (#CDATA)>
+  <!ATTLIST value id ID #IMPLIED>

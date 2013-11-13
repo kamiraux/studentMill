@@ -1,0 +1,63 @@
+Moulette
+========
+
+Presentation and objectives
+---------------------------
+
+This is a system to execute automatically a test suite on a set of students.
+
+The following functionnalities are available:
+
+- Isolation of students from each other and from the system
+
+- Configuration file for a project
+
+- Complete architecture for tests:
+
+  - Set of compilation units: if the student code has to be compiled several
+    way.
+
+  - Set of test units: a set of tests may refer to a test unit, this avoid
+    rewriting the same thing several times.
+
+  - A set of test data: the test data may be put in this set in order to be
+    referenced by tests afterwards.
+
+
+
+
+About isolation
+---------------
+
+TODO
+
+
+Configuration file
+------------------
+
+The configuration must expect to be executed in the directory where it is
+located (verry important). Every path defined by the variables in this file must
+be an absolute path. To use paths relatives to where the configuration file is,
+the special variable $PWD should be used.
+
+Example:
+    project.config
+    my_script.sh
+
+    Content of `project.config`
+    #! /bin/sh
+
+    PATH_TO_SCRIPT=$PWD/my_script.sh
+
+
+
+Compilation units
+-----------------
+
+TODO
+
+
+Test units
+----------
+
+TODO
