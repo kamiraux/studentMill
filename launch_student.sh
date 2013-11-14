@@ -13,6 +13,7 @@ else
 
     LOGIN=$2
     source "$1"
+    export M_MAKE
 
     SAN_TB="${M_TARBALLS_FOLDER}/${LOGIN}_sanitized"
     USER_COMP_DIR="/home/$LOGIN}/${M_PROJECT_NAME}_${M_RTOKEN}"
@@ -65,7 +66,6 @@ else
         echo "  "$comp_unit
         pushd "$comp_unit"
         cp -rf "$SAN_TB" "${USER_COMP_DIR}/${comp_unit}"
-        chown -R "$LOGIN":"$LOGIN" "${USER_COMP_DIR}/${comp_unit}"
         if test -e "pre_comp_tb_changes.sh"
         then
             # This script must assume to be launched where it is (ie. in
@@ -75,16 +75,43 @@ else
             ./pre_comp_tb_changes.sh "${USER_COMP_DIR}/${comp_unit}"
         fi
 
+        chown -R "$LOGIN":"$LOGIN" "${USER_COMP_DIR}/${comp_unit}"
 
         # Compile the student code
+        # Compute timeouts
+        EXEC_TIMEOUT=3
+        ABS_TIMEOUT=
+
+        if test -e exec_timeout
+        then
+            EXEC_TIMEOUT=1`cat exec_timeout`
+        fi
+        if test -e abs_timeout
+        then
+            ABS_TIMEOUT=1`cat abs_timeout`
+        fi
+        test "$ABS_TIMEOUT" = "" \
+            && ABS_TIMEOUT=$(($TIMEOUT_EXEC_ABS_RATIO * $EXEC_TIMEOUT))
+
+        echo "  Timeout set to:
+    Exec: $EXEC_TIMEOUT
+    Abs:  $ABS_TIMEOUT"
         if test -e "compile_student.sh"
         then
             echo "    Student compilation"
             pushd "${USER_COMP_DIR}/${comp_unit}"
             # This script must assume to be launched in the sanitized tarball
             # folder of the current compilation unit
-#          ##### "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh"
+            ##### "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh"
+            "$M_MOULETTE_ASSETS/sandbox" \
+                "${USER_COMP_DIR}/${comp_unit}.out" \
+                "${USER_COMP_DIR}/${comp_unit}.err" \
+                "${USER_COMP_DIR}/${comp_unit}.ret" \
+                $USER_ID \
+                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh"
+                | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
+            # TODO: kill remaining processes
         fi
 
 
@@ -131,6 +158,8 @@ else
                 echo "    -> Failure"
                 rm -rf "${USER_COMP_DIR}/${comp_unit}"
                 echo "$ERROR_MSG" > "${USER_COMP_DIR}/${comp_unit}.error"
+                echo "Compilation error log:" >> "${USER_COMP_DIR}/${comp_unit}.error"
+                cat "${USER_COMP_DIR}/${comp_unit}.err" >> "${USER_COMP_DIR}/${comp_unit}.error"
             fi
         fi
         popd # Come back from comp_unit folder
@@ -324,7 +353,6 @@ else
                             "$TEST_OUT/$test_id.err" \
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
-                            "$test_command" $TEST_ARGS
                             "$test_command" $TEST_ARGS \
                             | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
                     fi
@@ -345,21 +373,9 @@ else
                 && COMPUTE_RESULT="${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
                 || test -e "$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh" \
                 && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh"
-            if "$COMPUTE_RESULT" != ""
-            then
-                pushd "$TEST_RESULT"
 
-                # This script must generate the test.result file and may generate a test.error file
-                #  Param1: Path to the test dir (ref)
-                #  Param2: Path to the output dir
-                #  Param3: Path to the test exec dir
-                "COMPUTE_RESULT"                        \
-                    "${M_TESTS_FOLDER}/${test_dir}"     \
-                    "${TEST_OUT}"                       \
-                    "${TMP_TEST_DIR}/${test_dir}"
 
-                popd # Come back from test result folder
-            elif test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
+            if test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
             then
                 echo "  Computing test results"
                 OLD_IFS="$IFS"
@@ -372,6 +388,8 @@ else
                     test_result_dir="$TEST_RESULT/${test_id}"
                     current_test_result=true
                     error_message=
+
+                    mkdir -p "$test_result_dir"
 
                     if test -e "$test_id_file.ret"
                     then
@@ -426,6 +444,22 @@ else
                     IFS=','
                 done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
                 IFS="$OLD_IFS"
+            fi
+
+            if "$COMPUTE_RESULT" != ""
+            then
+                pushd "$TEST_RESULT"
+
+                # This script must generate the test.result file and may generate a test.error file
+                #  Param1: Path to the test dir (ref)
+                #  Param2: Path to the output dir
+                #  Param3: Path to the test exec dir
+                "COMPUTE_RESULT"                        \
+                    "${M_TESTS_FOLDER}/${test_dir}"     \
+                    "${TEST_OUT}"                       \
+                    "${TMP_TEST_DIR}/${test_dir}"
+
+                popd # Come back from test result folder
             fi
 
             if "$M_LIMIT_DISK_USAGE"
