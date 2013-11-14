@@ -208,6 +208,9 @@ format is: '`<test_id>,<test_command>`'.
 
     * `<id_test>.ret` file that contains the return code of the reference;
 
+    * `<id_test>.ref` file that will be diffed with the`<id_test>.my` int the
+      test execution folder ;
+
     * `<id_test>.name` file that contains the name of this test. **Not implemented**
 
     These files are specific to a test so they are located in the `.test`
@@ -251,10 +254,11 @@ the timeout for the execution of each test refering to the test unit.
 
 If there is no specific script, then the standard output, error output and
 return value for the test execution will be compared to the reference files
-(`<id_test>.out`, `<id_test>.err` and `<id_test>.ret`). Each difference will be
-reported and the correct log will be generated. Note that only present files
-will be diffed (ie. if a file is not present, no error will be reported, the
-check will just not be done).
+(`<id_test>.out`, `<id_test>.err` and `<id_test>.ret`). If a `<id_test>.ref` is
+present it will also be checked. Each difference will be reported and the
+error log will be generated. Note that only present files will be diffed
+(ie. if a file is not present, no error will be reported, the check will just
+not be done).
 
 If there is a specific script (named `compute_result.sh`) it will be executed
 after (not instead).  It will be executed inside the result directory specific
@@ -296,7 +300,7 @@ test, but keep the possibility to have a more specific behavior for a test.
 Notes
 =====
 
-In this document, when talking about a file we use the following notaion:
+In this document, when talking about a file we use the following convention:
 
 - (x) represents a executable file
 - (d) represents a directory

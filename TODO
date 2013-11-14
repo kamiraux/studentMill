@@ -14,8 +14,10 @@ MOULETTE
 [X] Pre process
     [X] Pre-compilation of test files
         [X] Using test directory configure and makefile
-        [X] Using configure and makefile from the compilation unit system (files
+        [O] Using files from the compilation unit system (files
             in test directory take precedence)
+            [X] configure and makefile
+            [ ] Use headers form compilation unit folder (CPPFLAGS= -I...)
     [X] Execution of script to generate test execution commands
 
 [O] Computation for each student
@@ -75,6 +77,7 @@ MOULETTE
                 in test directory take precedence)
             [O] Standard result computation using diff
                 [X] Test with all IO files
+                [X] Test the reference files
                 [X] Check only if file is present in test directory
                 [O] Subtests
                     [X] Check for each subtest

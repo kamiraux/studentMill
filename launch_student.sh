@@ -368,11 +368,6 @@ else
 
 
             # Compute reslut
-            COMPUTE_RESULT=
-            test -e "${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
-                && COMPUTE_RESULT="${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
-                || test -e "$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh" \
-                && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh"
 
 
             if test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
@@ -432,6 +427,23 @@ else
                         fi
                     fi
 
+                    # Check diff for ref files
+                    if test -e "$test_id_file.ref"
+                    then
+                        DIFF=`diff -u --label ref -label my "$test_id_file.ref" ""${TMP_TEST_DIR}/${test_dir}".my"`
+                        if $? != 0
+                        then
+                            current_test_result=false
+                            if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
+                            then
+                                error_message="${error_message}Output files differ:\n"
+                                error_message="${error_message}${DIFF}\n\n"
+                            else
+                                error_message="${error_message}Output files differ.\n\n"
+                            fi
+                        fi
+                    fi
+
 
                     if $current_test_result
                     then
@@ -445,6 +457,13 @@ else
                 done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
                 IFS="$OLD_IFS"
             fi
+
+
+            COMPUTE_RESULT=
+            test -e "${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
+                && COMPUTE_RESULT="${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
+                || test -e "$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh" \
+                && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh"
 
             if "$COMPUTE_RESULT" != ""
             then
@@ -461,6 +480,7 @@ else
 
                 popd # Come back from test result folder
             fi
+
 
             if "$M_LIMIT_DISK_USAGE"
             then
