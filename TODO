@@ -14,10 +14,12 @@ MOULETTE
 [X] Pre process
     [X] Pre-compilation of test files
         [X] Using test directory configure and makefile
-        [O] Using files from the compilation unit system (files
+        [X] Using files from the compilation unit system (files
             in test directory take precedence)
             [X] configure and makefile
-            [ ] Use headers form compilation unit folder (CPPFLAGS= -I...)
+            [X] Use headers form compilation unit folder (CPPFLAGS= -I...)
+                Done by giving the path to comp unit as argument to configure,
+                it may then generate a file rules.mk.
     [X] Execution of script to generate test execution commands
 
 [O] Computation for each student

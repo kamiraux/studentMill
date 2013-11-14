@@ -32,6 +32,7 @@ do
         if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
         then
             CONFIGURE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
+            ARGS="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT"
         fi
         if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
         then
@@ -57,7 +58,7 @@ do
 
     test "$CONFIGURE" != "" \
         && (echo "    configure"
-        $CONFIGURE)
+        $"CONFIGURE" $ARGS)
 
     test "$MAKEFILE" != "" \
         && (echo "    $M_MAKE"
@@ -65,7 +66,7 @@ do
 
     test "$GEN_TESTS" != "" \
         && (echo "    Generating test execution commands"
-        $GEN_TESTS)
+        "$GEN_TESTS")
 
     popd
 done
