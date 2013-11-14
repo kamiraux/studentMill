@@ -297,6 +297,24 @@ in the test unit directory. This allow to have a generic behavior for a set of
 test, but keep the possibility to have a more specific behavior for a test.
 
 
+Generationg traces
+------------------
+
+At the end of computation for a student, a script will be called to generate the
+final "trace".  This script will use a variable named '`M_TRACE_GENERATOR`' from
+the project configuration file. This variable must refer to a trace generator
+for the wanted output trace format. It may be an absolute path, but if it is not
+an absolute path, then the script will be searched in the `trace_generators`
+directory in the moulette assests directory.
+
+The generator will be executed inside the result directory so that it can be
+browsed. It will be given 2 arguments, the first one is the login of the student
+and the second one is the path to the directory containing the generator (this
+way the generator can use some files in the directory where it is located).
+
+The trace must be generated on the standard output, it will automatically be put
+in the correct file.
+
 Notes
 =====
 

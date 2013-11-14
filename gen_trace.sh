@@ -14,8 +14,8 @@ else
     else
         GEN_COMMAND="$M_MOULETTE_ASSETS/trace_generators/$M_TRACE_GENERATOR"
     fi
-    pushd `dirname "$GEN_COMMAND"`
-    "$GEN_COMMAND" "$LOGIN" "$TESTS_RESULTS" > "$M_TRACE_DIR/$LOGIN"
-    popd # Come back from trace direcory
+    pushd "$TESTS_RESULTS"
+    "$GEN_COMMAND" "$LOGIN" "`dirname "$GEN_COMMAND"`" > "$M_TRACE_DIR/$LOGIN"
+    popd # Come back from result direcory
 
 fi
