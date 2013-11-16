@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 SIGNAL=$1
 ARCH=$2

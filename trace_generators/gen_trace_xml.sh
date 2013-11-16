@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 LOGIN="$1"
 GENERETOR_ASSETS="$2"

@@ -1,7 +1,7 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 # Usage
-if $# -lt 2
+if test $# -lt 2
 then
     echo "Usage: ${0} config_file" >&2
     exit 1

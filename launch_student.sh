@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 ##### Sandboxed calls !
 
@@ -409,7 +409,7 @@ else
                     if test -e "$test_id_file.out"
                     then
                         DIFF=`diff -u --label ref -label my "$test_id_file.out" "$test_output_file.out"`
-                        if $? != 0
+                        if test $? != 0
                         then
                             current_test_result=false
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
@@ -424,7 +424,7 @@ else
                     if test -e "$test_id_file.err"
                     then
                         DIFF=`diff -u --label ref -label my "$test_id_file.err" "$test_output_file.err"`
-                        if $? != 0
+                        if test $? != 0
                         then
                             current_test_result=false
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH

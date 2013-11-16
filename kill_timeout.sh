@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 child_exec_timeout="$1"
 child_abs_timeout="$2"

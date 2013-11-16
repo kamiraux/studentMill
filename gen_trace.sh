@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 if test $# -lt 2
 then
