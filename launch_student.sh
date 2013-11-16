@@ -110,7 +110,7 @@ else
                 "${USER_COMP_DIR}/${comp_unit}.err" \
                 "${USER_COMP_DIR}/${comp_unit}.ret" \
                 $USER_ID \
-                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh" \
+                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh" "${M_MAKE}" \
                 | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
             # TODO: kill remaining processes

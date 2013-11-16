@@ -91,7 +91,9 @@ corresponding to the current compilation unit.
 Execution of `compile_student.sh`
 
 This script should expect to be run in the student directory corresponding to
-the current compilation unit.
+the current compilation unit. It is given as argument the content of the
+variable 'M_MAKE' of the project configuration file.
+
 
 A timeout is applied on this process using `exec_timeout` and `abs_timeout`
 files if present, if not a default timeout is applied as described in the
@@ -190,8 +192,8 @@ of commands that will be called during the execution of the test.
 
 The script `gen_tests_exec_commands.sh` will be executed inside each test folder
 that refers the test unit. This script must generate a file named
-`test_exec_commands` with the following format: each line represents a test; line
-format is: '`<test_id>,<test_command>`'.
+`test_exec_commands` with the following format: each line represents a test;
+line format is: '`<test_id>,<test_command>`'.
 
 - `<test_id>` is the identifier of the test, it will be its name in the
   results. It will also allow to refer files correspondig to the test:
