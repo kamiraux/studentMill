@@ -46,6 +46,7 @@ do
     if test -e configure
     then
         CONFIGURE=./configure
+        ARGS=
     fi
     if test -e Makefile
     then

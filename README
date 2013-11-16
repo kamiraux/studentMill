@@ -164,7 +164,7 @@ These files will be used twice: first when compiling tests during the
 preprocessing step, second when linkink (if needed) the test to the student code
 (this step is important for projects that generate a static library).
 
-First time they will be called inside the test folder and the rule called for
+First time they will be called inside the test folder and the rule called in
 the Makefile is '`common_compilation`'.
 
 Second time they will be executed inside the folder where the test will be
@@ -242,6 +242,9 @@ each subtest).
 This script must assume to be executed in the folder where it is located,
 therefore the first argument of the script will be the absolute path to the test
 execution directory.
+
+This script is called after copying test data to ths test execution directory
+and before the test execution.
 
 
 ### Timeouts

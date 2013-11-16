@@ -369,7 +369,6 @@ else
 
             # Compute reslut
 
-
             if test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
             then
                 echo "  Computing test results"
@@ -394,6 +393,17 @@ else
                         then
                             current_test_result=false
                             error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'\n\n"
+                        fi
+                    else
+                        STU_RET=`cat "$test_output_file.ret"`
+                        if test "$STU_RET" -ge 1000
+                        then
+                            SIGNAL=$(("$STU_RET" - 1000))
+                            pushd "$M_MOULETTE_ASSETS"
+                            SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                            popd
+                            current_test_result=false
+                            error_message="${error_message}Program received signal '$SIGNAL'\n\n"
                         fi
                     fi
                     if test -e "$test_id_file.out"
@@ -428,18 +438,57 @@ else
                     fi
 
                     # Check diff for ref files
-                    if test -e "$test_id_file.ref"
+                    if test -e "$test_id_file.diff_comp"
                     then
-                        DIFF=`diff -u --label ref -label my "$test_id_file.ref" ""${TMP_TEST_DIR}/${test_dir}".my"`
-                        if $? != 0
-                        then
-                            current_test_result=false
-                            if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
+                        #TODO
+                        OLD_IFS="$IFS"
+                        IFS=','
+                        while read ref_file my_file
+                        do
+                            IFS="$OLD_IFS"
+                            ref_file="${M_TESTS_FOLDER}/${test_dir}/$ref_file"
+                            my_file="${TMP_TEST_DIR}/${test_dir}/$my_file"
+                            DIFF=`diff -u --label ref -label my "$ref_file" "$my_file"`
+                            DIFF_RET=$?
+                            if "$DIFF_RET" != 0
                             then
-                                error_message="${error_message}Output files differ:\n"
-                                error_message="${error_message}${DIFF}\n\n"
-                            else
-                                error_message="${error_message}Output files differ.\n\n"
+                                current_test_result=false
+                                if "$DIFF_RET" = 1
+                                then
+                                    if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
+                                    then
+                                        error_message="${error_message}Output file differ:\n"
+                                        error_message="${error_message}${DIFF}\n\n"
+                                    else
+                                        error_message="${error_message}Output file differ.\n\n"
+                                    fi
+                                else
+                                    error_message="${error_message}Output file has not been created correctly.\n\n"
+                                fi
+                            fi
+                            IFS=','
+                        done < "$test_id_file.diff_comp"
+                        IFS="$OLD_IFS"
+                    else
+                        if test -e "$test_id_file.ref"
+                        then
+                            DIFF=`diff -u --label ref -label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
+                            DIFF_RET=$?
+                            if "$DIFF_RET" != 0
+                            then
+                                current_test_result=false
+                                if "$DIFF_RET" = 1
+                                then
+                                    if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
+                                    then
+                                        error_message="${error_message}Output file differ:\n"
+                                        error_message="${error_message}${DIFF}\n\n"
+                                    else
+                                        error_message="${error_message}Output file differ.\n\n"
+                                    fi
+                                else
+                                    error_message="${error_message}Output file has not been created correctly.\n\n"
+                                fi
                             fi
                         fi
                     fi

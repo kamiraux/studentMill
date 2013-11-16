@@ -78,8 +78,14 @@ MOULETTE
             [X] Using script from the test unit system (files
                 in test directory take precedence)
             [O] Standard result computation using diff
-                [X] Test with all IO files
-                [X] Test the reference files
+                [X] Test with IO files
+                    [X] Standard output, error output
+                    [X] Return value
+                    [X] Signals
+                    [X] Test the reference files
+                        [X] File with same name than <id_test>.ref
+                        [X] Use <id_test>.diff_comp to specify wich file is
+                            diffed with wich
                 [X] Check only if file is present in test directory
                 [O] Subtests
                     [X] Check for each subtest
