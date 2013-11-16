@@ -44,9 +44,9 @@ gen_rec ()
         # Gen group xml
         echo '<group id="'"$TEST_ID"'" name="'"$TEST_NAME"'">'
         # Browse sub directories
-        for dir in */
+        for dir in `ls -d */ 2> /dev/null`
         do
-            pushd $dir > /dev/null
+            pushd "$dir" > /dev/null
             gen_rec "$1/${dir%/}"
             popd > /dev/null # Come back from $dir
         done
@@ -61,9 +61,9 @@ echo '<?xml version="1.0"?>
     <group id="root_trace" name="Project">'
 
 
-for dir in */
+for dir in `ls -d */ 2> /dev/null`
 do
-    pushd $dir > /dev/null
+    pushd "$dir" > /dev/null
     gen_rec "${dir%/}"
     popd > /dev/null # Come back from $dir
 done

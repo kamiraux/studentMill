@@ -21,6 +21,7 @@ else
 
     echo "--- Pre processiong ---"
     echo "Copying tarball"
+    rm -rf "$SAN_TB"
     cp -rf "$M_TARBALLS_FOLDER"/"$LOGIN" "$SAN_TB"
     echo "Sanitizing"
     pushd "$SAN_TB"
@@ -85,11 +86,11 @@ else
 
         if test -e exec_timeout
         then
-            EXEC_TIMEOUT=1`cat exec_timeout`
+            EXEC_TIMEOUT=`cat exec_timeout`
         fi
         if test -e abs_timeout
         then
-            ABS_TIMEOUT=1`cat abs_timeout`
+            ABS_TIMEOUT=`cat abs_timeout`
         fi
         test "$ABS_TIMEOUT" = "" \
             && ABS_TIMEOUT=$(($TIMEOUT_EXEC_ABS_RATIO * $EXEC_TIMEOUT))
@@ -99,7 +100,7 @@ else
     Abs:  $ABS_TIMEOUT"
         if test -e "compile_student.sh"
         then
-            echo "    Student compilation"
+            echo "  Student compilation"
             pushd "${USER_COMP_DIR}/${comp_unit}"
             # This script must assume to be launched in the sanitized tarball
             # folder of the current compilation unit
@@ -110,7 +111,7 @@ else
                 "${USER_COMP_DIR}/${comp_unit}.ret" \
                 $USER_ID \
                 "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh" \
-                | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
+                | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
             # TODO: kill remaining processes
         fi
@@ -141,12 +142,12 @@ else
                                 echo "/!\ Cheat detected: using forbidden function '${used_fun}'"
                                 CHEAT=true
                                 EXPTECTATION=false
-                                ERROR_MSG="${ERROR_MSG}Forbidden functions detected in file '${file_to_test}':\n${USED_FUNCTIONS}\n"
+                                ERROR_MSG="${ERROR_MSG}Forbidden functions detected in file '${expected_file}':\n${USED_FUNCTIONS}\n"
                             fi
                         fi
                     else
-                        echo "      File: '${file_to_test}' not found"
-                        ERROR_MSG="${ERROR_MSG}File: '${file_to_test}' not found\n"
+                        echo "      File: '${FILE_TO_TEST}' not found"
+                        ERROR_MSG="${ERROR_MSG}File: '${expected_file}' not found\n"
                         EXPTECTATION=false
                     fi
                 done
@@ -300,7 +301,7 @@ else
 
             if test -e exec_timeout
             then
-                EXEC_TIMEOUT=1`cat exec_timeout`
+                EXEC_TIMEOUT=`cat exec_timeout`
             elif "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/exec_timeout
@@ -310,7 +311,7 @@ else
             fi
             if test -e abs_timeout
             then
-                ABS_TIMEOUT=1`cat abs_timeout`
+                ABS_TIMEOUT=`cat abs_timeout`
             elif "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/abs_timeout
@@ -350,7 +351,7 @@ else
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
                             "$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
+                            | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     else
                         "$M_MOULETTE_ASSETS/sandbox" \
                             "$TEST_OUT/$test_id.out" \
@@ -358,7 +359,7 @@ else
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
                             "$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
+                            | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     fi
 
                     # Kill every remaining processes
@@ -544,9 +545,9 @@ else
             echo FAIL > "$TEST_RESULT"/test.result
             echo "Compilation failed" > "$TEST_RESULT"/test.error
 
-            if test -e "${USER_COMP_DIR}/${REF_COMP_UNIT}".error
+            if test -e "${USER_COMP_DIR}/${REF_COMP_UNIT}.comp_unit".error
             then
-                cat "${USER_COMP_DIR}/${REF_COMP_UNIT}".error >> "$TEST_RESULT"/test.error
+                cat "${USER_COMP_DIR}/${REF_COMP_UNIT}.comp_unit".error >> "$TEST_RESULT"/test.error
             fi
         fi
         popd
