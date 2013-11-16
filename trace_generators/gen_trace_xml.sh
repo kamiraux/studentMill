@@ -17,7 +17,7 @@ gen_rec ()
     then
         # We are a result directory
         # Gen trace
-        RESULT=`cat test.reslut`
+        RESULT=`cat test.result`
         if test "$RESULT" = "PASS"
         then
             VALUE=1
@@ -36,7 +36,7 @@ gen_rec ()
         #     LOG=
         fi
 
-'<value>'"$VALUE"'</value>
+        echo '<value>'"$VALUE"'</value>
 <status>'"$RESULT"'</status>
 </eval>'
     else
@@ -46,7 +46,9 @@ gen_rec ()
         # Browse sub directories
         for dir in */
         do
-            gen_rec ${dir%/}
+            pushd $dir > /dev/null
+            gen_rec "$1/${dir%/}"
+            popd > /dev/null # Come back from $dir
         done
         # Gen end group xml
         echo '</group>'
@@ -61,8 +63,10 @@ echo '<?xml version="1.0"?>
 
 for dir in */
 do
-    gen_rec ${dir%/}
+    pushd $dir > /dev/null
+    gen_rec "${dir%/}"
+    popd > /dev/null # Come back from $dir
 done
 
-echo '</trace>
-'
+echo '</group>
+</trace>'

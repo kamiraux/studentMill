@@ -72,7 +72,7 @@ else
             # This script must assume to be launched where it is (ie. in
             # the `.comp_unit` folder) and the first argument is the path
             # to the tarball to modify
-            echo "    Pre compilation changes"
+            echo "  Pre compilation changes"
             ./pre_comp_tb_changes.sh "${USER_COMP_DIR}/${comp_unit}"
         fi
 
