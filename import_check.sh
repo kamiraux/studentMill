@@ -10,6 +10,14 @@ fi
 FILE="$1"
 AUTH="$2"
 
+EXPORTED_FUNCTIONS=$(nm -g "$FILE" \
+    | grep ' T ' \
+    | cut -d ' ' -f 3 \
+    | sed -e ':a
+N
+$!ba
+s/\n/|/g')
+
 USED_FUNCTIONS=$(nm -g -u "$FILE" \
     | sed 's/ *//' \
     | grep 'U.*' \
@@ -26,5 +34,7 @@ s/*/.*/g' "$AUTH")
 
 for fun in $USED_FUNCTIONS
 do
-    echo "$fun" | grep -E "$AUTH_FUN_REGEX" > /dev/null || echo "$fun"
+    echo "$fun" | grep -E "$AUTH_FUN_REGEX" > /dev/null \
+        || echo "$fun" | grep -E "$EXPORTED_FUNCTIONS" > /dev/null \
+        || echo "$fun"
 done
