@@ -13,9 +13,9 @@ AUTH="$2"
 USED_FUNCTIONS=$(nm -g -u "$FILE" \
     | sed 's/ *//' \
     | grep 'U.*' \
-    | cut --delimiter=" " -f 2 \
+    | cut -d " " -f 2 \
     | grep '^[a-zA-Z].*' \
-    | cut --delimiter='@' -f 1)
+    | cut -d '@' -f 1)
 
 AUTH_FUN_REGEX=$(sed -e ':a
 N
