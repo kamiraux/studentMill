@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if test $# -lt 2
+if test $# -lt 3
 then
     echo too few arguments >&2
     echo Usage: ./launch config_file_abs login_x results_dir >&2
