@@ -29,6 +29,7 @@ do
     if test -e "ref_test_unit"
     then
         REF_TEST_UNIT=`cat ref_test_unit`
+        echo "    Using test unit: '$REF_TEST_UNIT'"
         if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
         then
             CONFIGURE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure

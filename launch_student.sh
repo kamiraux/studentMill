@@ -191,7 +191,6 @@ else
         then
             REF_COMP_UNIT=`cat ref_comp_unit`
         fi
-        echo "  Using compilation unit: ${REF_COMP_UNIT}"
         if test -e "ref_test_unit"
         then
             REF_TEST_UNIT=`cat ref_test_unit`
