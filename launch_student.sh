@@ -412,7 +412,7 @@ else
                     fi
                     if test -e "$test_id_file.out"
                     then
-                        DIFF=`diff -u --label ref -label my "$test_id_file.out" "$test_output_file.out"`
+                        DIFF=`diff -u --label ref --label my "$test_id_file.out" "$test_output_file.out"`
                         if test $? != 0
                         then
                             current_test_result=false
@@ -427,7 +427,7 @@ else
                     fi
                     if test -e "$test_id_file.err"
                     then
-                        DIFF=`diff -u --label ref -label my "$test_id_file.err" "$test_output_file.err"`
+                        DIFF=`diff -u --label ref --label my "$test_id_file.err" "$test_output_file.err"`
                         if test $? != 0
                         then
                             current_test_result=false
@@ -452,7 +452,7 @@ else
                             IFS="$OLD_IFS"
                             ref_file="${M_TESTS_FOLDER}/${test_dir}/$ref_file"
                             my_file="${TMP_TEST_DIR}/${test_dir}/$my_file"
-                            DIFF=`diff -u --label ref -label my "$ref_file" "$my_file"`
+                            DIFF=`diff -u --label ref --label my "$ref_file" "$my_file"`
                             DIFF_RET=$?
                             if test "$DIFF_RET" != 0
                             then
@@ -476,7 +476,7 @@ else
                     else
                         if test -e "$test_id_file.ref"
                         then
-                            DIFF=`diff -u --label ref -label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
+                            DIFF=`diff -u --label ref --label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
                             DIFF_RET=$?
                             if test "$DIFF_RET" != 0
                             then
@@ -526,7 +526,7 @@ else
                 #  Param1: Path to the test dir (ref)
                 #  Param2: Path to the output dir
                 #  Param3: Path to the test exec dir
-                "COMPUTE_RESULT"                        \
+                "$COMPUTE_RESULT"                        \
                     "${M_TESTS_FOLDER}/${test_dir}"     \
                     "${TEST_OUT}"                       \
                     "${TMP_TEST_DIR}/${test_dir}"

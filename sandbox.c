@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 
   if (argc < 6)
   {
-    printf("Too few arguments\n"
+    dprintf(STDERR_FILENO, "Too few arguments\n"
       "usage: ./exec file_out file_err file_ret user timeout command [...]\n");
     return 2;
   }
