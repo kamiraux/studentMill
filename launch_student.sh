@@ -110,7 +110,7 @@ else
                 "${USER_COMP_DIR}/${comp_unit}.err" \
                 "${USER_COMP_DIR}/${comp_unit}.ret" \
                 $USER_ID \
-                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh" "${M_MAKE}" \
+                "${M_TESTS_FOLDER}/comp_units/${comp_unit}/compile_student.sh" "${M_MAKE}" \
                 | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
             # TODO: kill remaining processes
@@ -214,7 +214,7 @@ else
             if test -e configure
             then
                 CONFIGURE="$PWD/configure"
-            elif "$REF_TEST_UNIT" != ""
+            elif test "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
                 then
@@ -225,7 +225,7 @@ else
             if test -e Makefile
             then
                 MAKEFILE="$PWD/Makefile"
-            elif "$REF_TEST_UNIT" != ""
+            elif test "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
                 then
@@ -278,7 +278,7 @@ else
             if test -e pre_test.sh
             then
                 PRE_TEST_SCRIPT="$PWD/pre_test.sh"
-            elif "$REF_TEST_UNIT" != ""
+            elif test "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/pre_test.sh
                 then
@@ -301,7 +301,7 @@ else
             if test -e exec_timeout
             then
                 EXEC_TIMEOUT=`cat exec_timeout`
-            elif "$REF_TEST_UNIT" != ""
+            elif test "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/exec_timeout
                 then
@@ -311,7 +311,7 @@ else
             if test -e abs_timeout
             then
                 ABS_TIMEOUT=`cat abs_timeout`
-            elif "$REF_TEST_UNIT" != ""
+            elif test "$REF_TEST_UNIT" != ""
             then
                 if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/abs_timeout
                 then
@@ -454,10 +454,10 @@ else
                             my_file="${TMP_TEST_DIR}/${test_dir}/$my_file"
                             DIFF=`diff -u --label ref -label my "$ref_file" "$my_file"`
                             DIFF_RET=$?
-                            if "$DIFF_RET" != 0
+                            if test "$DIFF_RET" != 0
                             then
                                 current_test_result=false
-                                if "$DIFF_RET" = 1
+                                if test "$DIFF_RET" = 1
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                     then
@@ -478,10 +478,10 @@ else
                         then
                             DIFF=`diff -u --label ref -label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
                             DIFF_RET=$?
-                            if "$DIFF_RET" != 0
+                            if test "$DIFF_RET" != 0
                             then
                                 current_test_result=false
-                                if "$DIFF_RET" = 1
+                                if test "$DIFF_RET" = 1
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                     then
@@ -518,7 +518,7 @@ else
                 || test -e "$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh" \
                 && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh"
 
-            if "$COMPUTE_RESULT" != ""
+            if test "$COMPUTE_RESULT" != ""
             then
                 pushd "$TEST_RESULT"
 
