@@ -17,7 +17,14 @@ echo Child PID: $child_pid
 
 ps_line=`ps -p $child_pid -o time=''`
 
+
+# INV_WAIT must be equal to '1 / WAIT'
+WAIT=0.1    ### Change these two value together !
+INV_WAIT=10 ### Change these two value together !
+
+
 NB_LOOP=0
+MAX_NB_LOOP=$(($child_abs_timeout * $INV_WAIT))
 while test "$ps_line" != ""
 do
     ps_line=`echo "$ps_line" | sed 's/ //g'`
@@ -31,12 +38,12 @@ EOF
     time_min=$((10#${time_min}))
     time_sec=$((10#$time_sec))
     if test $(($time_min * 60 + $time_sec)) -ge "$child_exec_timeout" \
-        || test $(($NB_LOOP * 0.1)) -ge "$child_abs_timeout"
+        || test $NB_LOOP -ge $MAX_NB_LOOP
     then
         kill -9 $child_pid
         break 1
     else
-        sleep 0.1
+        sleep $WAIT
         ps_line=`ps -p $child_pid -o time=''`
         NB_LOOP=$(($NB_LOOP + 1))
     fi

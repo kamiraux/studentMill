@@ -23,7 +23,7 @@ source "$1"
 echo "Pre-treatment for tests"
 pushd "$M_TESTS_FOLDER"
 # Change rights of compile_student.sh scripts to allow execution by students
-chmod go+rx `find comp_unit -name "compile_student.sh"`
+chmod go+rx `find comp_units -name "compile_student.sh"`
 
 for test_dir in `find . -type d -name "*.test"`
 do
