@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+if test $# -lt 2
+then
+    echo "Usage: $0 EXEC_TIMEOUT ABSOLUTE_TIMEOUT" >&2
+    exit 1
+fi
+
+
 child_exec_timeout="$1"
 child_abs_timeout="$2"
 

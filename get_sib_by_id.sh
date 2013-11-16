@@ -1,5 +1,11 @@
 #! /usr/bin/env bash
 
+if test $# -lt 2
+then
+    echo "Usage: $0 SIGNAL ARCH" >&2
+    exit 1
+fi
+
 SIGNAL=$1
 ARCH=$2
 

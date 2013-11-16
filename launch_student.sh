@@ -16,7 +16,7 @@ else
     export M_MAKE
 
     SAN_TB="${M_TARBALLS_FOLDER}/${LOGIN}_sanitized"
-    USER_COMP_DIR="/home/$LOGIN}/${M_PROJECT_NAME}_${M_RTOKEN}"
+    USER_COMP_DIR="/home/${LOGIN}/${M_PROJECT_NAME}_${M_RTOKEN}"
     echo $LOGIN
 
     echo "--- Pre processiong ---"
@@ -31,6 +31,7 @@ else
     echo "Sanity check"
      # AUTHORS
     if test "* $LOGIN" != "`head -n 1 AUTHORS`"
+    then
         echo "Fail AUTHORS !"
     fi
      # Dirty files
@@ -108,7 +109,7 @@ else
                 "${USER_COMP_DIR}/${comp_unit}.err" \
                 "${USER_COMP_DIR}/${comp_unit}.ret" \
                 $USER_ID \
-                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh"
+                "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh" \
                 | "$M_MOULETTE_ASSETS/kill_timeout" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
             # TODO: kill remaining processes
@@ -118,6 +119,7 @@ else
         # Check that expected output are present
         # external authorized functions
         if test -d expected
+        then
             echo "    Checking for expected files"
             EXPTECTATION=true
             ERROR_MSG=
@@ -201,6 +203,7 @@ else
         mkdir -p "$TEST_RESULT"
 
         if test -d "${USER_COMP_DIR}/${REF_COMP_UNIT}".comp_unit
+        then
             # Create directories for test execution and test output
             mkdir -p "${TMP_TEST_DIR}/${test_dir}"
             TEST_OUT="${TMP_TEST_DIR}/${test_dir}.output"
@@ -252,8 +255,9 @@ else
                 echo "  Copying required data for test"
                 REQUIRED_DATA=`cat required_data`
                 if test "$REQUIRED_DATA" = "all"
+                then
                     cp -rf "$M_TESTS_FOLDER"/test_data "${TMP_TEST_DIR}/${test_dir}"
-               else
+                else
                     OLD_IFS="$IFS"
                     IFS=$'\n'
                     for line in $REQUIRED_DATA

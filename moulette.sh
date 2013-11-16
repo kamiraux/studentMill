@@ -24,15 +24,18 @@ rm -rf "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"
 TMP_PROJ_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"`
 
 
-# Compilation of tests
+# Pre-processing
+echo "Compilation of tests"
 > "${M_LOG_FILE_NAME}_pre_process".out \
     2> "${M_LOG_FILE_NAME}_pre_process".err \
     "${M_MOULETTE_ASSETS}"/pre_process.sh "$CONFIG_ABS"
 
 
 # Launch tests for each student
-for student in `cat $STUDENT_LIST_FILE`
+echo "Launching tests"
+for student in `cat $M_STUDENT_LIST_FILE`
 do
+    echo "Student: $student"
     > "${M_LOG_FILE_NAME}_${student}".out \
         2> "${M_LOG_FILE_NAME}_${student}".err \
         "${M_MOULETTE_ASSETS}"/launch_student.sh "$CONFIG_ABS" "$student"

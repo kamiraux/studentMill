@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+if test $# -lt 2
+then
+    echo "Usage: $0 FILE AUTH" >&2
+    exit 1
+fi
+
+
 FILE="$1"
 AUTH="$2"
 

@@ -59,7 +59,7 @@ do
 
     test "$CONFIGURE" != "" \
         && (echo "    configure"
-        $"CONFIGURE" $ARGS)
+        "$CONFIGURE" $ARGS)
 
     test "$MAKEFILE" != "" \
         && (echo "    $M_MAKE"
