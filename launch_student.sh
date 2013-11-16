@@ -142,12 +142,12 @@ else
                                 echo "/!\ Cheat detected: using forbidden function '${used_fun}'"
                                 CHEAT=true
                                 EXPTECTATION=false
-                                ERROR_MSG="${ERROR_MSG}Forbidden functions detected in file '${expected_file}':\n${USED_FUNCTIONS}\n"
+                                ERROR_MSG="${ERROR_MSG}Forbidden functions detected in file '${expected_file}':"$'\n'"${USED_FUNCTIONS}"$'\n'""
                             fi
                         fi
                     else
                         echo "      File: '${FILE_TO_TEST}' not found"
-                        ERROR_MSG="${ERROR_MSG}File: '${expected_file}' not found\n"
+                        ERROR_MSG="${ERROR_MSG}File: '${expected_file}' not found"$'\n'""
                         EXPTECTATION=false
                     fi
                 done
@@ -396,7 +396,7 @@ else
                         if test "$REF_RET" != "$STU_RET"
                         then
                             current_test_result=false
-                            error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'\n\n"
+                            error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'""$'\n'""
                         fi
                     else
                         STU_RET=`cat "$test_output_file.ret"`
@@ -407,7 +407,7 @@ else
                             SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
                             popd
                             current_test_result=false
-                            error_message="${error_message}Program received signal '$SIGNAL'\n\n"
+                            error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
                         fi
                     fi
                     if test -e "$test_id_file.out"
@@ -418,10 +418,10 @@ else
                             current_test_result=false
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
-                                error_message="${error_message}Standard outputs differ:\n"
-                                error_message="${error_message}${DIFF}\n\n"
+                                error_message="${error_message}Standard outputs differ:"$'\n'""
+                                error_message="${error_message}${DIFF}"$'\n'""$'\n'""
                             else
-                                error_message="${error_message}Standard outputs differ.\n\n"
+                                error_message="${error_message}Standard outputs differ."$'\n'""$'\n'""
                             fi
                         fi
                     fi
@@ -433,10 +433,10 @@ else
                             current_test_result=false
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
-                                error_message="${error_message}Error outputs differ:\n"
-                                error_message="${error_message}${DIFF}\n\n"
+                                error_message="${error_message}Error outputs differ:"$'\n'""
+                                error_message="${error_message}${DIFF}"$'\n'""$'\n'""
                             else
-                                error_message="${error_message}Error outputs differ.\n\n"
+                                error_message="${error_message}Error outputs differ."$'\n'""$'\n'""
                             fi
                         fi
                     fi
@@ -461,13 +461,13 @@ else
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                     then
-                                        error_message="${error_message}Output file differ:\n"
-                                        error_message="${error_message}${DIFF}\n\n"
+                                        error_message="${error_message}Output file differ:"$'\n'""
+                                        error_message="${error_message}${DIFF}"$'\n'""$'\n'""
                                     else
-                                        error_message="${error_message}Output file differ.\n\n"
+                                        error_message="${error_message}Output file differ."$'\n'""$'\n'""
                                     fi
                                 else
-                                    error_message="${error_message}Output file has not been created correctly.\n\n"
+                                    error_message="${error_message}Output file has not been created correctly."$'\n'""$'\n'""
                                 fi
                             fi
                             IFS=','
@@ -485,13 +485,13 @@ else
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                     then
-                                        error_message="${error_message}Output file differ:\n"
-                                        error_message="${error_message}${DIFF}\n\n"
+                                        error_message="${error_message}Output file differ:"$'\n'""
+                                        error_message="${error_message}${DIFF}"$'\n'""$'\n'""
                                     else
-                                        error_message="${error_message}Output file differ.\n\n"
+                                        error_message="${error_message}Output file differ."$'\n'""$'\n'""
                                     fi
                                 else
-                                    error_message="${error_message}Output file has not been created correctly.\n\n"
+                                    error_message="${error_message}Output file has not been created correctly."$'\n'""$'\n'""
                                 fi
                             fi
                         fi

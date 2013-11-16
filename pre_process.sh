@@ -20,8 +20,11 @@ source "$1"
 
 # Pre processing of tests
 # -> typically test object files compilation
-echo "Precompilation of tests"
+echo "Pre-treatment for tests"
 pushd "$M_TESTS_FOLDER"
+# Change rights of compile_student.sh scripts to allow execution by students
+chmod go+rx `find comp_unit -name "compile_student.sh"`
+
 for test_dir in `find . -type d -name "*.test"`
 do
     echo "  "$test_dir
