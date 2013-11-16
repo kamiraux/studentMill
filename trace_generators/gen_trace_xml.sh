@@ -30,10 +30,9 @@ gen_rec ()
         then
             #LOG=`cat test.error`
             echo '<log type="Info">
-'"`cat test.error`"'
+<![CDATA['"`cat test.error | sed -e 's/]]>/]] >/g'`"'
+]]>
 </log>'
-        # else
-        #     LOG=
         fi
 
         echo '<value>'"$VALUE"'</value>
