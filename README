@@ -172,7 +172,7 @@ the Makefile is '`common_compilation`'.
 Second time they will be executed inside the folder where the test will be
 executed (different for each student), the binary (if any) to be generated
 should be put here. In order to access previously compilated files (from the
-test and from the student) two variables are set before the call to `make`:
+test and from the student) two variables are set before the call to (`g`)`make`:
 
 - `COMP_UNIT_DIR` contains the absolute path to the student directory
   corresponding to the current test's compilation unit (this may contain the lib

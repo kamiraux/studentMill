@@ -94,6 +94,7 @@ int main(int argc, char** argv)
       goto lbl_err2;
     }
     execv(argv[5], argv + 5);
+    ret = 42;
   }
 
   lbl_err2:
