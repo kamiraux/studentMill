@@ -332,13 +332,11 @@ else
             then
                 echo "  Launch test"
 
-                OLD_IFS="$IFS"
-                IFS=','
-                while read test_id test_command
+
+                while IFS=',' read test_id test_command
                 do
                     # TODO: It may be a good idea to re-copy test data to prevent student breaking it
 
-                    IFS="$OLD_IFS"
                     test_id_file="${M_TESTS_FOLDER}/${test_dir}/${test_id}"
 
                     TEST_ARGS=
@@ -369,9 +367,7 @@ else
                     # Kill every remaining processes
                     killall -9 -u "$LOGIN"
 
-                    IFS=','
                 done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
-                IFS="$OLD_IFS"
             fi
             popd # Come back from test directory
 
@@ -387,11 +383,9 @@ else
                 else
                     ONLY_ONE=false
                 fi
-                OLD_IFS="$IFS"
-                IFS=','
-                while read test_id test_command
+
+                while IFS=',' read test_id test_command
                 do
-                    IFS="$OLD_IFS"
                     test_id_file="${M_TESTS_FOLDER}/${test_dir}/${test_id}"
                     test_output_file="$TEST_OUT/${test_id}"
                     if $ONLY_ONE
@@ -460,11 +454,8 @@ else
                     if test -e "$test_id_file.diff_comp"
                     then
                         #TODO
-                        OLD_IFS="$IFS"
-                        IFS=','
-                        while read ref_file my_file
+                        while IFS=',' read ref_file my_file
                         do
-                            IFS="$OLD_IFS"
                             ref_file="${M_TESTS_FOLDER}/${test_dir}/$ref_file"
                             my_file="${TMP_TEST_DIR}/${test_dir}/$my_file"
                             DIFF=`diff -u --label ref --label my "$ref_file" "$my_file"`
@@ -485,9 +476,7 @@ else
                                     error_message="${error_message}Output file has not been created correctly."$'\n'""$'\n'""
                                 fi
                             fi
-                            IFS=','
                         done < "$test_id_file.diff_comp"
-                        IFS="$OLD_IFS"
                     else
                         if test -e "$test_id_file.ref"
                         then
@@ -520,9 +509,7 @@ else
                         echo "$error_message" > "${test_result_dir}/test.error"
                     fi
 
-                    IFS=','
                 done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
-                IFS="$OLD_IFS"
             fi
 
 
@@ -534,6 +521,7 @@ else
 
             if test "$COMPUTE_RESULT" != ""
             then
+                echo "Executing compute_result.sh"
                 pushd "$TEST_RESULT"
 
                 # This script must generate the test.result file and may generate a test.error file

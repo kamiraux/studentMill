@@ -11,7 +11,7 @@ ARCH=$2
 
 SIG=`grep "^${SIGNAL}," "SIGNALS_${ARCH}" | cut -d, -f 2`
 
-if "$SIG" = ""
+if test "$SIG" = ""
 then
     SIG="Signal id $SIGNAL"
 fi
