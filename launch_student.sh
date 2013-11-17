@@ -381,6 +381,12 @@ else
             if test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
             then
                 echo "  Computing test results"
+                if test "`cat "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands | wc -l`" -eq 1
+                then
+                    ONLY_ONE=true
+                else
+                    ONLY_ONE=false
+                fi
                 OLD_IFS="$IFS"
                 IFS=','
                 while read test_id test_command
@@ -388,7 +394,12 @@ else
                     IFS="$OLD_IFS"
                     test_id_file="${M_TESTS_FOLDER}/${test_dir}/${test_id}"
                     test_output_file="$TEST_OUT/${test_id}"
-                    test_result_dir="$TEST_RESULT/${test_id}"
+                    if $ONLY_ONE
+                    then
+                        test_result_dir="$TEST_RESULT"
+                    else
+                        test_result_dir="$TEST_RESULT/${test_id}"
+                    fi
                     current_test_result=true
                     error_message=
 
@@ -500,7 +511,6 @@ else
                             fi
                         fi
                     fi
-
 
                     if $current_test_result
                     then
