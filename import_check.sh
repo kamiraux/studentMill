@@ -11,7 +11,7 @@ FILE="$1"
 AUTH="$2"
 
 EXPORTED_FUNCTIONS=$(nm -g "$FILE" \
-    | grep -E ' (T|U) ' \
+    | grep -E ' (T|B) ' \
     | cut -d ' ' -f 3 \
     | sed -e ':a
 N
