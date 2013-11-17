@@ -37,8 +37,9 @@ for student in `cat $M_STUDENT_LIST_FILE`
 do
     echo "Student: $student"
     > "${M_LOG_FILE_NAME}_${student}".out \
-        2> "${M_LOG_FILE_NAME}_${student}".err \
+        2>&1 \
         "${M_MOULETTE_ASSETS}"/launch_student.sh "$CONFIG_ABS" "$student"
+#  "${M_LOG_FILE_NAME}_${student}".err \
 done
 
 

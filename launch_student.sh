@@ -347,6 +347,7 @@ else
 
                     if test -e "${test_id_file}.in"
                     then
+			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
                         cat "${test_id_file}.in" | "$M_MOULETTE_ASSETS/sandbox" \
                             "$TEST_OUT/$test_id.out" \
                             "$TEST_OUT/$test_id.err" \
@@ -355,6 +356,7 @@ else
                             "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
                             | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     else
+			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
                         "$M_MOULETTE_ASSETS/sandbox" \
                             "$TEST_OUT/$test_id.out" \
                             "$TEST_OUT/$test_id.err" \
