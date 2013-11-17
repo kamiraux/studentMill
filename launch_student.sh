@@ -28,6 +28,13 @@ else
     # Remove check directory
     rm -rf check
 
+    echo "Creating temporary directory for tests"
+    TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
+    TESTS_RESULTS="${TMP_TEST_DIR}/results"
+    mkdir -p "$TESTS_RESULTS"
+    chmod 711 "$TMP_TEST_DIR"
+
+
     # Sanity check
     echo "Sanity check"
      # AUTHORS
@@ -37,8 +44,21 @@ else
     fi
      # Dirty files
     # Coding style check
-    popd # come back from sanitized tarball
+    # CS_CHECK_OUT_DIR="$TESTS_RESULTS/Coding-Style"
+    # mkdir "$CS_CHECK_OUT_DIR"
+    # for file in `find . -name "*.[ch]"`
+    # do
+    #     CS_RES=`"$M_MOULETTE_ASSETS/css.pl" "$file"`
+    #     if test $? -ne 0
+    #     then
+    #         mkdir -p "$CS_CHECK_OUT_DIR/$file"
+    #         echo "$CS_RES" > "$CS_CHECK_OUT_DIR/$file"/test.error
+    #         echo FAIL > "$CS_CHECK_OUT_DIR/$file"/test.result
+    #     fi
+    # done
 
+
+    popd # come back from sanitized tarball
 
     # Create user login_x
     echo "Creating user '$LOGIN'"
@@ -55,9 +75,6 @@ else
     mkdir "$USER_COMP_DIR"
     chmod 100 "$USER_COMP_DIR"
 
-    echo "Creating temporary directory for tests"
-    TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
-    chmod 711 "$TMP_TEST_DIR"
     CHEAT=false
 
     # Student compilation for each compilation unit
@@ -335,11 +352,12 @@ else
 
                 #while IFS=',' read test_id test_command
                 OLD_IFS="$IFS"
-                IFS=','
+                IFS=$'\n'
                 #while read test_id test_command
                 for test_line in `cat "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands`
                 do
                     IFS="$OLD_IFS"
+                    echo "test_line = $test_line"
                     test_id="`echo "$test_line" |cut -d ',' -f 1`"
                     test_command="`echo "$test_line" |cut -d ',' -f 2`"
 
@@ -374,7 +392,7 @@ else
 
                     # Kill every remaining processes
                     killall -9 -u "$LOGIN"
-                    IFS=','
+                    IFS=$'\n'
                 done
                 IFS="$OLD_IFS"
             fi
@@ -393,7 +411,7 @@ else
                     ONLY_ONE=false
                 fi
                 OLD_IFS="$IFS"
-                IFS=','
+                IFS=$'\n'
                 #while read test_id test_command
                 for test_line in `cat "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands`
                 do
@@ -440,6 +458,7 @@ else
                         if test $? != 0
                         then
                             current_test_result=false
+                            DIFF=`echo "$DIFF" | cat -v`
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
                                 error_message="${error_message}Standard outputs differ:"$'\n'""
@@ -455,6 +474,7 @@ else
                         if test $? != 0
                         then
                             current_test_result=false
+                            DIFF=`echo "$DIFF" | cat -v`
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
                                 error_message="${error_message}Error outputs differ:"$'\n'""
@@ -478,6 +498,7 @@ else
                             if test "$DIFF_RET" != 0
                             then
                                 current_test_result=false
+                                DIFF=`echo "$DIFF" | cat -v`
                                 if test "$DIFF_RET" = 1
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
@@ -500,6 +521,7 @@ else
                             if test "$DIFF_RET" != 0
                             then
                                 current_test_result=false
+                                DIFF=`echo "$DIFF" | cat -v`
                                 if test "$DIFF_RET" = 1
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
