@@ -22,7 +22,7 @@ CONFIG_ABS=`realpath "$1"`
 
 rm -rf "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"
 TMP_PROJ_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"`
-
+chmod 711 "$TMP_PROJ_DIR"
 
 # Pre-processing
 echo "Compilation of tests"

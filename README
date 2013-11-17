@@ -238,7 +238,7 @@ not generate the `test_exec_commands` file, then nothing will be executed
 
 A script named `pre_test.sh` may be put in the test unit folder if any action
 must be executed on the system before the execution of a test. It will be
-executed juste before the execution of the test (just once per test, not before
+executed just before the execution of the test (just once per test, not before
 each subtest).
 
 This script must assume to be executed in the folder where it is located,

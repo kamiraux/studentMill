@@ -57,7 +57,7 @@ else
 
     echo "Creating temporary directory for tests"
     TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
-
+    chmod 711 "$TMP_TEST_DIR"
     CHEAT=false
 
     # Student compilation for each compilation unit
@@ -270,8 +270,8 @@ else
                     done
                     IFS="$OLD_IFS"
                 fi
-                chown -R "$LOGIN:$LOGIN" "${TMP_TEST_DIR}/${test_dir}"
             fi
+            chown -R "$LOGIN:$LOGIN" "${TMP_TEST_DIR}/${test_dir}"
 
 
             # Execute pre_test script
