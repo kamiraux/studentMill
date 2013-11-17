@@ -201,6 +201,8 @@ else
         # Create directories for test result
         TEST_RESULT="$TESTS_RESULTS/${test_dir%.test}"
         mkdir -p "$TEST_RESULT"
+        TEST_BIN_PATH="${TMP_TEST_DIR}/${test_dir}.bin"
+        mkdir -p "$TEST_BIN_PATH"
 
         if test -d "${USER_COMP_DIR}/${REF_COMP_UNIT}".comp_unit
         then
@@ -232,7 +234,7 @@ else
                     MAKEFILE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
                 fi
             fi
-            pushd "${TMP_TEST_DIR}/${test_dir}"
+            pushd "$TEST_BIN_PATH"
             test "$CONFIGURE" != "" \
                 && (echo "  Compilation/link: configure"
                 "$CONFIGURE")
@@ -246,7 +248,7 @@ else
             fi
 #            chown -R root "${M_TESTS_FOLDER}/${test_dir}"
 #            chmod -R 711 "${M_TESTS_FOLDER}/${test_dir}"
-            popd # Come back from test directory
+            popd # Come back from test binary directory
 
 
             # Copy test_data
@@ -268,7 +270,7 @@ else
                     done
                     IFS="$OLD_IFS"
                 fi
-                chown -R "$LOGIN:$LOGIN" "${TMP_TEST_DIR}/${test_dir}/test_data"
+                chown -R "$LOGIN:$LOGIN" "${TMP_TEST_DIR}/${test_dir}"
             fi
 
 
@@ -329,6 +331,7 @@ else
             if test -e "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
             then
                 echo "  Launch test"
+
                 OLD_IFS="$IFS"
                 IFS=','
                 while read test_id test_command
@@ -349,7 +352,7 @@ else
                             "$TEST_OUT/$test_id.err" \
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
-                            "$test_command" $TEST_ARGS \
+                            "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
                             | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     else
                         "$M_MOULETTE_ASSETS/sandbox" \
@@ -357,7 +360,7 @@ else
                             "$TEST_OUT/$test_id.err" \
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
-                            "$test_command" $TEST_ARGS \
+                            "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
                             | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     fi
 
@@ -396,18 +399,17 @@ else
                         if test "$REF_RET" != "$STU_RET"
                         then
                             current_test_result=false
+                            if test "$STU_RET" -ge 1000
+                            then
+                                SIGNAL=$(("$STU_RET" - 1000))
+                                pushd "$M_MOULETTE_ASSETS"
+                                SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                                popd
+                                current_test_result=false
+                                error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
+                            else
                             error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'""$'\n'""
-                        fi
-                    else
-                        STU_RET=`cat "$test_output_file.ret"`
-                        if test "$STU_RET" -ge 1000
-                        then
-                            SIGNAL=$(("$STU_RET" - 1000))
-                            pushd "$M_MOULETTE_ASSETS"
-                            SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
-                            popd
-                            current_test_result=false
-                            error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
+                            fi
                         fi
                     fi
                     if test -e "$test_id_file.out"
