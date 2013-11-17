@@ -333,8 +333,16 @@ else
                 echo "  Launch test"
 
 
-                while IFS=',' read test_id test_command
+                #while IFS=',' read test_id test_command
+                OLD_IFS="$IFS"
+                IFS=','
+                #while read test_id test_command
+                for test_line in `cat "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands`
                 do
+                    IFS="$OLD_IFS"
+                    test_id="`echo "$test_line" |cut -d ',' -f 1`"
+                    test_command="`echo "$test_line" |cut -d ',' -f 2`"
+
                     # TODO: It may be a good idea to re-copy test data to prevent student breaking it
 
                     test_id_file="${M_TESTS_FOLDER}/${test_dir}/${test_id}"
@@ -366,8 +374,9 @@ else
 
                     # Kill every remaining processes
                     killall -9 -u "$LOGIN"
-
-                done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
+                    IFS=','
+                done
+                IFS="$OLD_IFS"
             fi
             popd # Come back from test directory
 
@@ -383,9 +392,15 @@ else
                 else
                     ONLY_ONE=false
                 fi
-
-                while IFS=',' read test_id test_command
+                OLD_IFS="$IFS"
+                IFS=','
+                #while read test_id test_command
+                for test_line in `cat "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands`
                 do
+                    IFS="$OLD_IFS"
+                    test_id="`echo "$test_line" |cut -d ',' -f 1`"
+                    test_command="`echo "$test_line" |cut -d ',' -f 2`"
+
                     test_id_file="${M_TESTS_FOLDER}/${test_dir}/${test_id}"
                     test_output_file="$TEST_OUT/${test_id}"
                     if $ONLY_ONE
@@ -508,8 +523,9 @@ else
                         echo FAIL > "${test_result_dir}/test.result"
                         echo "$error_message" > "${test_result_dir}/test.error"
                     fi
-
-                done < "${M_TESTS_FOLDER}/${test_dir}/"test_exec_commands
+                    IFS=$'\n'
+                done
+                IFS="$OLD_IFS"
             fi
 
 
