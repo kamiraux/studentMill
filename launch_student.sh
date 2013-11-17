@@ -403,14 +403,14 @@ else
                             current_test_result=false
                             if test "$STU_RET" -ge 1000
                             then
-                                SIGNAL=$(("$STU_RET" - 1000))
+                                SIGNAL=$(($STU_RET - 1000))
                                 pushd "$M_MOULETTE_ASSETS"
                                 SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
                                 popd
                                 current_test_result=false
                                 error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
                             else
-                            error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'""$'\n'""
+                                error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'""$'\n'""
                             fi
                         fi
                     fi
