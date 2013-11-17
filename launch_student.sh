@@ -186,10 +186,10 @@ else
     done
     popd # Come back form $M_TEST_FOLDER
 
-    if $CHEAT
-    then
-        exit 2
-    fi
+    #if $CHEAT
+    #then
+    #    exit 2
+    #fi
 
     TESTS_RESULTS="${TMP_TEST_DIR}/results"
     mkdir -p "$TESTS_RESULTS"
