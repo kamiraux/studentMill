@@ -23,8 +23,10 @@ static d_close_t     echo_close;
 static d_read_t      echo_read;
 static d_write_t     echo_write;
 static d_open_t      nb_read_open;
+static d_close_t     nb_read_close;
 static d_read_t      nb_read_read;
 static d_open_t      nb_write_open;
+static d_close_t     nb_write_close;
 static d_read_t      nb_write_read;
 static d_write_t     nb_write;
 
@@ -40,7 +42,7 @@ static struct cdevsw const_cdevsw = {
 static struct cdevsw nb_read_cdevsw = {
   .d_version = D_VERSION,
   .d_open = nb_read_open,
-  .d_close = echo_close,
+  .d_close = nb_read_close,
   .d_read = nb_read_read,
   .d_write = nb_write,
   .d_name = "nb_read_dev",
@@ -48,7 +50,7 @@ static struct cdevsw nb_read_cdevsw = {
 static struct cdevsw nb_write_cdevsw = {
   .d_version = D_VERSION,
   .d_open = nb_write_open,
-  .d_close = echo_close,
+  .d_close = nb_write_close,
   .d_read = nb_write_read,
   .d_write = nb_write,
   .d_name = "nb_write_dev",
@@ -137,7 +139,7 @@ nb_read_open(struct cdev *dev __unused, int oflags __unused, int devtype __unuse
 {
   int error = 0;
 //  nb_read_call = 0;
-  uprintf("Opened device \"echo\" successfully.\n");
+  //uprintf("Opened device \"echo\" successfully.\n");
   return (error);
 }
 static int
@@ -146,7 +148,7 @@ nb_write_open(struct cdev *dev __unused, int oflags __unused, int devtype __unus
 {
   int error = 0;
 //  nb_write_call = 0;
-  uprintf("Opened device \"echo\" successfully.\n");
+  //uprintf("Opened device \"echo\" successfully.\n");
   return (error);
 }
 static int
@@ -154,7 +156,7 @@ echo_open(struct cdev *dev __unused, int oflags __unused, int devtype __unused,
           struct thread *td __unused)
 {
   int error = 0;
-  uprintf("Opened device \"echo\" successfully.\n");
+//  uprintf("Opened device \"echo\" successfully.\n");
   return (error);
 }
 
@@ -163,7 +165,23 @@ echo_close(struct cdev *dev __unused, int fflag __unused, int devtype __unused,
            struct thread *td __unused)
 {
 
-  uprintf("Closing device \"echo\".\n");
+//  uprintf("Closing device \"echo\".\n");
+  return (0);
+}
+static int
+nb_read_close(struct cdev *dev __unused, int fflag __unused, int devtype __unused,
+           struct thread *td __unused)
+{
+
+//  uprintf("Closing device \"echo\".\n");
+  return (0);
+}
+static int
+nb_write_close(struct cdev *dev __unused, int fflag __unused, int devtype __unused,
+           struct thread *td __unused)
+{
+
+//  uprintf("Closing device \"echo\".\n");
   return (0);
 }
 
