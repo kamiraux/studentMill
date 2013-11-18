@@ -35,7 +35,7 @@ echo "Compilation of tests"
 echo "Launching tests"
 
 cd "$M_MOULETTE_ASSETS"
-cat "$STUDENTS_FILE" | ./parallelism/parallel \
+cat "$M_STUDENT_LIST_FILE" | ./parallelism/parallel \
     $M_NB_WORKERS \
     "$CONFIG_ABS" \
     "$M_LOG_FILE_NAME"
