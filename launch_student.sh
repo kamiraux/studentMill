@@ -156,7 +156,7 @@ else
                             USED_FUNCTIONS=`${M_MOULETTE_ASSETS}/import_check.sh "$FILE_TO_TEST" "$AUTH_FUN_FILE"`
                             if test "$USED_FUNCTIONS" != ""
                             then
-                                echo "/!\ Cheat detected: using forbidden function '${used_fun}'"
+                                echo "/!\ Cheat detected: using forbidden function "$'\n'"${USED_FUNCTIONS}"
                                 CHEAT=true
                                 EXPTECTATION=false
                                 ERROR_MSG="${ERROR_MSG}Forbidden functions detected in file '${expected_file}':"$'\n'"${USED_FUNCTIONS}"$'\n'""
