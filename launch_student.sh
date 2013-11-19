@@ -204,6 +204,12 @@ else
         REF_COMP_UNIT="default"
         REF_TEST_UNIT=
         pushd "$test_dir"
+        NOT_PARALLELIZABLE=false
+        if test -e not_parallelizable
+        then
+            NOT_PARALLELIZABLE=true
+        fi
+
         if test -e "ref_comp_unit"
         then
             REF_COMP_UNIT=`cat ref_comp_unit`
@@ -290,6 +296,18 @@ else
             fi
             chown -R "$LOGIN:$LOGIN" "${TMP_TEST_DIR}/${test_dir}"
 
+
+            ### Begin critical section when test is not parallelizable
+            if $NOT_PARALLELIZABLE
+            then
+                lockfile="$M_LOCK_FILE"
+                while ! ( set -o noclobber; echo "locked" > "$lockfile") 2> /dev/null
+                do
+                    sleep 0.1
+                done
+                trap 'rm -f "$lockfile"; exit $?' INT TERM EXIT
+            fi
+            ###
 
             # Execute pre_test script
             # TODO:
@@ -574,6 +592,14 @@ else
                 popd # Come back from test result folder
             fi
 
+
+            ### End critical section when test is not parallelizable
+            if $NOT_PARALLELIZABLE
+            then
+                rm -f "$lockfile"
+                trap - INT TERM EXIT
+            fi
+            ###
 
             if "$M_LIMIT_DISK_USAGE"
             then
