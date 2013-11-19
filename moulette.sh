@@ -10,6 +10,7 @@ fi
 # Configuration
 if test -e "$1"
 then
+    CONFIG_ABS=`realpath "$1"`
     echo "Moving to '"`dirname "$1"`"'"
     cd `dirname "$1"`
     source `basename "$1"`
@@ -18,8 +19,7 @@ then
     exit 1
 fi
 
-CONFIG_ABS=`realpath "$1"`
-
+echo "Removing previous temporary data"
 rm -rf "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"
 TMP_PROJ_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}"`
 chmod 711 "$TMP_PROJ_DIR"
@@ -33,13 +33,20 @@ echo "Compilation of tests"
 
 # Launch tests for each student
 echo "Launching tests"
-gmake -j $M_NB_WORKERS \
-    -f "${M_MOULETTE_ASSETS}"/parallelism/Makefile \
-    CONFIG_ABS="$CONFIG_ABS" \
-    STUDENTS_FILE="$M_STUDENT_LIST_FILE" \
-    LOG="${M_LOG_FILE_NAME}" \
-    MOULETTE_ASSETS="${M_MOULETTE_ASSETS}" \
-    launch
+
+cd "$M_MOULETTE_ASSETS"
+cat "$STUDENTS_FILE" | ./parallelism/parallel \
+    $M_NB_WORKERS \
+    "$CONFIG_ABS" \
+    "$M_LOG_FILE_NAME"
+
+#gmake -j $M_NB_WORKERS \
+#    -f "${M_MOULETTE_ASSETS}"/parallelism/Makefile \
+#    CONFIG_ABS="$CONFIG_ABS" \
+#    STUDENTS_FILE="$M_STUDENT_LIST_FILE" \
+#    LOG="${M_LOG_FILE_NAME}" \
+#    MOULETTE_ASSETS="${M_MOULETTE_ASSETS}" \
+#    launch
 
 # for student in `cat $M_STUDENT_LIST_FILE`
 # do

@@ -12,7 +12,10 @@ else
     # End
 
     LOGIN=$2
-    source "$1"
+    cd `dirname "$1"`
+    source `basename "$1"`
+    #source "$1"
+
     export M_MAKE
 
     SAN_TB="${M_TARBALLS_FOLDER}/${LOGIN}_sanitized"
