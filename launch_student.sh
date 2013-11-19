@@ -87,6 +87,7 @@ else
     do
         echo "  "$comp_unit
         pushd "$comp_unit"
+        rm -rf "${USER_COMP_DIR}/${comp_unit}"
         cp -rf "$SAN_TB" "${USER_COMP_DIR}/${comp_unit}"
         if test -e "pre_comp_tb_changes.sh"
         then

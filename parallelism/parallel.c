@@ -82,6 +82,7 @@ void launch_worker(s_args* args, char* work)
   if (pid)
   {//father
     nb_child++;
+    printf("%s\n", work);
   }
   else
   {//son

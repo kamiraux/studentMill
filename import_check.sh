@@ -11,7 +11,7 @@ FILE="$1"
 AUTH="$2"
 
 EXPORTED_FUNCTIONS=$(nm -g "$FILE" \
-    | grep -E ' (T|B) ' \
+    | grep -E ' (T|D|B) ' \
     | cut -d ' ' -f 3 \
     | sed -e ':a
 N
@@ -32,9 +32,11 @@ s/\n/|/g
 s/*/.*/g' "$AUTH")
 
 
+#echo '^'"$AUTH_FUN_REGEX"'$'
+
 for fun in $USED_FUNCTIONS
 do
-    echo "$fun" | grep -E "$AUTH_FUN_REGEX" > /dev/null \
-        || echo "$fun" | grep -E "$EXPORTED_FUNCTIONS" > /dev/null \
+    echo "$fun" | grep -E '^('"$AUTH_FUN_REGEX"')$' > /dev/null \
+        || echo "$fun" | grep -E '^('"$EXPORTED_FUNCTIONS"')$' > /dev/null \
         || echo "$fun"
 done
