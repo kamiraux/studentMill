@@ -33,12 +33,12 @@ echo "Compilation of tests"
 
 # Launch tests for each student
 echo "Launching tests"
-cd "${M_MOULETTE_ASSETS}"
 gmake -j $M_NB_WORKERS \
     -f "${M_MOULETTE_ASSETS}"/parallelism/Makefile \
     CONFIG_ABS="$CONFIG_ABS" \
     STUDENTS_FILE="$M_STUDENT_LIST_FILE" \
     LOG="${M_LOG_FILE_NAME}" \
+    MOULETTE_ASSETS="${M_MOULETTE_ASSETS}" \
     launch
 
 # for student in `cat $M_STUDENT_LIST_FILE`
@@ -49,7 +49,7 @@ gmake -j $M_NB_WORKERS \
 #         "${M_MOULETTE_ASSETS}"/launch_student.sh "$CONFIG_ABS" "$student"
 
 #  "${M_LOG_FILE_NAME}_${student}".err \
-done
+#done
 
 
 
