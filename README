@@ -1,8 +1,10 @@
 Moulette
 ========
 
-Presentation and objectives
----------------------------
+Generalities
+------------
+
+### Presentation and objectives
 
 This is a system to execute automatically a test suite on a set of students.
 
@@ -24,21 +26,40 @@ The following functionnalities are available:
     referenced by tests afterwards.
 
 
+### Usage
+
+This software can be called with the following syntax:
+
+    ./moulette CONFIG_FILE
+
+where `CONFIG_FILE` is the path to the configuration file of the project to be
+computed.
 
 
-About isolation
----------------
+### About isolation
 
 TODO
+
+### About parallelization
+
+Parallelization of tests is possible by setting the variable `M_NB_WORKERS` to a
+value greater than `1` int the configuration file.
+
+Please keep in mind that parallelization is done on students, i.e. multiple
+students are processed at the same time, not multiple tests on the same student.
 
 
 Configuration file
 ------------------
 
+This software provides a simple way to compute various projects, each one may
+have a different configuration file which is given as an argument when the
+software is invocated.
+
 The configuration must expect to be executed in the directory where it is
 located (verry important). Every path defined by the variables in this file must
 be an absolute path. To use paths relatives to where the configuration file is,
-the special variable $PWD should be used.
+the special variable `$PWD` might be used.
 
 Example:
 
@@ -50,11 +71,74 @@ Example:
 
     PATH_TO_SCRIPT=$PWD/my_script.sh
 
-TODO: Describe variables to define
+### Variables to set
+
+- `M_PROJECT_NAME` is a string representing the project name.
+
+- `M_RTOKEN` is a string, it should be set to a random token. This is for
+  security considerations, this may prevent anyone from finding the name of the
+  directory when tests will be executed. Rights management of this software
+  should avoid such threat, so this variable may be empty.
+
+- `M_LOG_FILE_NAME` is an absolute path to the file where logs will be
+  output. This name will be suffixed to precise the nature of the logfile; for
+  example during pre-processing step, logs will be output to file
+  `${M_LOG_FILE_NAME}_pre_process.out`.
+
+- `M_LIMIT_DISK_USAGE` is a boolean value (`true` or `false`). It is used to
+  determine if temporary tests output directories should be deleted when no more
+  required by the software. Set it to `true` may save a lot of disk space during
+  the computaion process. Set it to `false` may be useful for testsuite
+  debugging purpose or manual review.
+
+- `M_MAKE` is a command, it will be used to call the `make` utility. It should
+  be used to chose between `make` and `gmake` on non-gnu operating systems.
+
+- `M_MAX_DISPLAY_DIFF_LENGTH` is an integer, it is the maximum size of the
+  `diff` output when differences exixt between test output and reference test
+  output. Beyond this limit the `diff` output will not be displayed`, a simple
+  message will be shown instead saying that the ouptuts differ.
+
+- `M_ARCH` is a string, it is the system architecture where the tests will be
+  executed. This may be accessible through the command `uname`.  This variable
+  is used for example to display correct infornmation messages when a signal is
+  received by a process during a test execution.
+
+- `M_STUDENT_LIST_FILE` is an absolute file path, it is the file containing the
+  list of students to be moulinetted.
+
+- `M_TESTS_FOLDER` is an absolute path to the directory where test suite is
+  located (see section on _Test suite_).
+
+- `M_TARBALLS_FOLDER` is an absolute path to the directory containing tarballs
+  to be tested.  For the moment (-> TODO) the tarballs must be uncompressed
+  (i.e. each "tarball" is a folder containing the files).  The name of the
+  folder must be the name/login of the student in the students list file.
+
+- `M_TRACE_DIR` is an absolute path to the directory where tarces must be
+  output. One file will be created for each student.
+
+- `M_LOCK_FILE` is an absolute path to the lockfile to be used. This is used to
+  prevent parallel execution of tests marked as "non-parallelizable".
+
+- `M_NB_WORKERS` is an integer that represent the maximum number of workers that
+  will be executed simultaneously. Set it to `1` will disable parallel
+  execution.
+
+- `M_MOULETTE_ASSETS` is an absolute path to the directory that contains the
+   installation of this software (i.e. folder containing the main program
+   `moulette.sh`).
+
+- `M_TRACE_GENERATOR` is an absolute or relative path to the executble file that
+  will be used to generate traces; relative path must be taken from the folder
+  `$M_MOULETTE_ASSETS/trace_generators`.
 
 
-Compilation units
------------------
+
+Test suite
+----------
+
+### Compilation units
 
 TODO
 
@@ -77,7 +161,7 @@ This folder may contain the following files:
 - `expected` (d)
 
 
-### Pre compilation tarball changes
+#### Pre compilation tarball changes
 
 Execution of `pre_comp_tb_changes.sh`
 
@@ -86,7 +170,7 @@ first argument to this script is the absolute path to the student directory
 corresponding to the current compilation unit.
 
 
-### Compilation of the student code
+#### Compilation of the student code
 
 Execution of `compile_student.sh`
 
@@ -100,7 +184,7 @@ files if present, if not a default timeout is applied as described in the
 section _'Timeout'_ of the _'Isolation'_ part.
 
 
-### Checking presence of expected files
+#### Checking presence of expected files
 
 The system allow you to defines a set of files that must be present for the
 compilation unit to be marked as "valid".
@@ -123,10 +207,11 @@ The format of this file is as follow:
 
 - One function name per line;
 
-- A function name may use the character _\`\*\`_ with the sane meaning than globbing.
+- A function name may use the character _\`\*\`_ with the sane meaning than
+  globbing.
 
   For example: "`dup*`" on a line will allow all function whose name begin with
-  'dup' (ie. `dup`, `dup2`, etc).
+  'dup' (i.e. `dup`, `dup2`, etc).
 
 If usage of a non-authorized function is detected an error will be reported and
 the whole compilation unit will be marked as failed.
@@ -134,8 +219,7 @@ the whole compilation unit will be marked as failed.
 
 
 
-Test units
-----------
+### Test units
 
 TODO
 
@@ -160,7 +244,7 @@ This folder may contain the following files:
 - `abs_timeout`
 - `compute_result.sh` (x)
 
-### Configure and Makefile
+#### Configure and Makefile
 
 These files will be used twice: first when compiling tests during the
 preprocessing step, second when linkink (if needed) the test to the student code
@@ -184,7 +268,7 @@ test and from the student) two variables are set before the call to (`g`)`make`:
 The rule called in the Makefile is '`test_compilation`'.
 
 
-### Generation of test execution commands
+#### Generation of test execution commands
 
 During the preprocessing step the script `gen_tests_exec_commands.sh` of the
 test unit will be called. Its goal is to generate a file that contains the list
@@ -213,12 +297,16 @@ line format is: '`<test_id>,<test_command>`'.
     * `<id_test>.ref` file that will be diffed with the`<id_test>.my` int the
       test execution folder ;
 
-    * `<id_test>.name` file that contains the name of this test. **Not implemented**
+    * `<id_test>.name` file that contains the name of this test. **Not
+      implemented**
+
+    * `<id_test>.des` file that contains the description of this test. **Not
+      implemented**
 
     These files are specific to a test so they are located in the `.test`
     folder. For more details please refers to the part on test folders.
 
-- `test_command` is the command to be executed, ie. the path to a binary that
+- `test_command` is the command to be executed, i.e. the path to a binary that
   will be executed for the test. It is important to note that this command
   should assume to be launched from the student test folder.
 
@@ -234,7 +322,7 @@ not generate the `test_exec_commands` file, then nothing will be executed
 (unless the test directory contains a static file `test_exec_commands`).
 
 
-### Pre-test script execution
+#### Pre-test script execution
 
 A script named `pre_test.sh` may be put in the test unit folder if any action
 must be executed on the system before the execution of a test. It will be
@@ -249,25 +337,25 @@ This script is called after copying test data to ths test execution directory
 and before the test execution.
 
 
-### Timeouts
+#### Timeouts
 
 The files `exec_timeout` and `abs_timeout` located in a test unit are used as
 the timeout for the execution of each test refering to the test unit.
 
 
-### Computing the results
+#### Computing the results
 
 If there is no specific script, then the standard output, error output and
 return value for the test execution will be compared to the reference files
 (`<id_test>.out`, `<id_test>.err` and `<id_test>.ret`). If a `<id_test>.ref` is
 present it will also be checked. Each difference will be reported and the
 error log will be generated. Note that only present files will be diffed
-(ie. if a file is not present, no error will be reported, the check will just
+(i.e. if a file is not present, no error will be reported, the check will just
 not be done).
 
 If there is a specific script (named `compute_result.sh`) it will be executed
 after (not instead).  It will be executed inside the result directory specific
-to this test (ie. the `.test`). It is assumed to generate, at least, a file
+to this test (i.e. the `.test`). It is assumed to generate, at least, a file
 named `test.result`.
 
 - If the result is found as successful then the test.result must contain
@@ -283,7 +371,7 @@ The file will be given the following 3 arguments:
 - Absolute path to the output dir
 - Absolute path to the test exec dir
 
-### Precedence considerations
+#### Precedence considerations
 
 The following files may be present in a test (`.test`) directory:
 
@@ -302,8 +390,12 @@ in the test unit directory. This allow to have a generic behavior for a set of
 test, but keep the possibility to have a more specific behavior for a test.
 
 
-Generationg traces
-------------------
+### Tests
+
+
+
+
+### Generationg traces
 
 At the end of computation for a student, a script will be called to generate the
 final "trace".  This script will use a variable named '`M_TRACE_GENERATOR`' from
@@ -325,8 +417,8 @@ Notes
 
 In this document, when talking about a file we use the following convention:
 
-- (x) represents a executable file
-- (d) represents a directory
+- \(x\) represents a executable file
+- \(d\) represents a directory
 - no annotation represents a regular file
 
 

@@ -9,7 +9,7 @@ fi
 SIGNAL=$1
 ARCH=$2
 
-SIG=`grep "^${SIGNAL}," "SIGNALS_${ARCH}" | cut -d, -f 2`
+SIG=`grep "^${SIGNAL}," "data/SIGNALS_${ARCH}" | cut -d, -f 2`
 
 if test "$SIG" = ""
 then

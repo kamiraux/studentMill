@@ -88,7 +88,7 @@ void launch_worker(s_args* args, char* work)
   {//son
     char *aargs[5] =
       {
-        "./parallelism/launch_student_redir_wrapper.sh",
+        "modules/parallelism/launch_student_redir_wrapper.sh",
         args->log,
         args->conf,
         work,

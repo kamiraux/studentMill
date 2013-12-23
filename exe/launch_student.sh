@@ -126,13 +126,13 @@ else
             # This script must assume to be launched in the sanitized tarball
             # folder of the current compilation unit
             ##### "${M_TESTS_FOLDER}/${comp_unit}/compile_student.sh"
-            "$M_MOULETTE_ASSETS/sandbox" \
+            "$M_MOULETTE_ASSETS/exe/sandbox" \
                 "${USER_COMP_DIR}/${comp_unit}.out" \
                 "${USER_COMP_DIR}/${comp_unit}.err" \
                 "${USER_COMP_DIR}/${comp_unit}.ret" \
                 $USER_ID \
                 "${M_TESTS_FOLDER}/comp_units/${comp_unit}/compile_student.sh" "${M_MAKE}" \
-                | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
             # TODO: kill remaining processes
         fi
@@ -157,7 +157,7 @@ else
                         if test -e authorized_functions
                         then
                             AUTH_FUN_FILE="$M_TESTS_FOLDER/comp_units/${comp_unit}/expected/${expected}/authorized_functions"
-                            USED_FUNCTIONS=`${M_MOULETTE_ASSETS}/import_check.sh "$FILE_TO_TEST" "$AUTH_FUN_FILE"`
+                            USED_FUNCTIONS=`${M_MOULETTE_ASSETS}/exe/import_check.sh "$FILE_TO_TEST" "$AUTH_FUN_FILE"`
                             if test "$USED_FUNCTIONS" != ""
                             then
                                 echo "/!\ Cheat detected: using forbidden function "$'\n'"${USED_FUNCTIONS}"
@@ -394,22 +394,22 @@ else
                     if test -e "${test_id_file}.in"
                     then
 			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
-                        cat "${test_id_file}.in" | "$M_MOULETTE_ASSETS/sandbox" \
+                        cat "${test_id_file}.in" | "$M_MOULETTE_ASSETS/exe/sandbox" \
                             "$TEST_OUT/$test_id.out" \
                             "$TEST_OUT/$test_id.err" \
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
                             "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                            | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     else
 			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
-                        "$M_MOULETTE_ASSETS/sandbox" \
+                        "$M_MOULETTE_ASSETS/exe/sandbox" \
                             "$TEST_OUT/$test_id.out" \
                             "$TEST_OUT/$test_id.err" \
                             "$TEST_OUT/$test_id.ret" \
                             $USER_ID \
                             "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                            | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
                     fi
 
                     # Kill every remaining processes
@@ -465,7 +465,7 @@ else
                             then
                                 SIGNAL=$(($STU_RET - 1000))
                                 pushd "$M_MOULETTE_ASSETS"
-                                SIGNAL=`./get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                                SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
                                 popd
                                 current_test_result=false
                                 error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
@@ -625,5 +625,5 @@ else
 
 
     # Generate trace
-    "$M_MOULETTE_ASSETS"/gen_trace.sh "$1" "$LOGIN" "$TESTS_RESULTS"
+    "$M_MOULETTE_ASSETS"/exe/gen_trace.sh "$1" "$LOGIN" "$TESTS_RESULTS"
 fi

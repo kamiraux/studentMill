@@ -3,7 +3,7 @@
 if test $# -lt 3
 then
     echo too few arguments >&2
-    echo Usage: ./launch config_file_abs login_x results_dir >&2
+    echo Usage: ./gen_trace.sh config_file_abs login_x results_dir >&2
 else
     source "$1"
     LOGIN="$2"

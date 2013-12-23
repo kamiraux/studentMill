@@ -28,14 +28,14 @@ chmod 711 "$TMP_PROJ_DIR"
 echo "Compilation of tests"
 > "${M_LOG_FILE_NAME}_pre_process".out \
     2> "${M_LOG_FILE_NAME}_pre_process".err \
-    "${M_MOULETTE_ASSETS}"/pre_process.sh "$CONFIG_ABS"
+    "${M_MOULETTE_ASSETS}"/exe/pre_process.sh "$CONFIG_ABS"
 
 
 # Launch tests for each student
 echo "Launching tests"
 
 cd "$M_MOULETTE_ASSETS"
-cat "$M_STUDENT_LIST_FILE" | ./parallelism/parallel \
+cat "$M_STUDENT_LIST_FILE" | exe/parallel \
     $M_NB_WORKERS \
     "$CONFIG_ABS" \
     "$M_LOG_FILE_NAME"
