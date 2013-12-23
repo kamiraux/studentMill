@@ -245,9 +245,9 @@ else
                 CONFIGURE="$PWD/configure"
             elif test "$REF_TEST_UNIT" != ""
             then
-                if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
+                if test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/configure
                 then
-                    CONFIGURE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
+                    CONFIGURE="$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/configure
                 fi
             fi
             MAKEFILE=
@@ -256,9 +256,9 @@ else
                 MAKEFILE="$PWD/Makefile"
             elif test "$REF_TEST_UNIT" != ""
             then
-                if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
+                if test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/Makefile
                 then
-                    MAKEFILE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
+                    MAKEFILE="$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/Makefile
                 fi
             fi
             pushd "$TEST_BIN_PATH"
@@ -321,9 +321,9 @@ else
                 PRE_TEST_SCRIPT="$PWD/pre_test.sh"
             elif test "$REF_TEST_UNIT" != ""
             then
-                if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/pre_test.sh
+                if test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/pre_test.sh
                 then
-                    PRE_TEST_SCRIPT="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/pre_test.sh
+                    PRE_TEST_SCRIPT="$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/pre_test.sh
                 fi
             fi
             if test "$PRE_TEST_SCRIPT" != ""
@@ -344,9 +344,9 @@ else
                 EXEC_TIMEOUT=`cat exec_timeout`
             elif test "$REF_TEST_UNIT" != ""
             then
-                if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/exec_timeout
+                if test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/exec_timeout
                 then
-                    EXEC_TIMEOUT=`cat "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/exec_timeout`
+                    EXEC_TIMEOUT=`cat "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/exec_timeout`
                 fi
             fi
             if test -e abs_timeout
@@ -354,9 +354,9 @@ else
                 ABS_TIMEOUT=`cat abs_timeout`
             elif test "$REF_TEST_UNIT" != ""
             then
-                if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/abs_timeout
+                if test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/abs_timeout
                 then
-                    ABS_TIMEOUT=`cat "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/abs_timeout`
+                    ABS_TIMEOUT=`cat "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"/abs_timeout`
                 fi
             fi
             test "$ABS_TIMEOUT" = "" \
@@ -576,8 +576,8 @@ else
             COMPUTE_RESULT=
             test -e "${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
                 && COMPUTE_RESULT="${M_TESTS_FOLDER}/${test_dir}/compute_result.sh" \
-                || test -e "$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh" \
-                && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT/compute_result.sh"
+                || test -e "$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit/compute_result.sh" \
+                && COMPUTE_RESULT="$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit/compute_result.sh"
 
             if test "$COMPUTE_RESULT" != ""
             then

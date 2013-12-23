@@ -23,9 +23,9 @@ exe/parallel: ${PARA_OBJS}
 
 doc: doc/index.html
 
-index.html: README
+doc/index.html: README
 	mkdir -p doc
-	pandoc -f markdown -t html -o index.html $^
+	pandoc -f markdown -t html --email-obfuscation=references --number-sections --toc --toc-depth=3 -o $@ $^
 
 clean:
 	${RM} ${TARGETS}

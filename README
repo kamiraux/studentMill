@@ -4,6 +4,13 @@ Moulette
 Generalities
 ------------
 
+### Author and origin
+
+This software was written by (Kevin Amiraux)<kevin.amiraux@epita.fr> in 2013.
+
+It was originally designed to execute generic test-suite on a large set of
+students submissions.
+
 ### Presentation and objectives
 
 This is a system to execute automatically a test suite on a set of students.
