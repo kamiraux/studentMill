@@ -29,28 +29,29 @@ for test_dir in `find . -type d -name "*.test"`
 do
     echo "  "$test_dir
     pushd "$test_dir"
+    ARGS=
     if test -e "ref_test_unit"
     then
         REF_TEST_UNIT=`cat ref_test_unit`
         echo "    Using test unit: '$REF_TEST_UNIT'"
-        if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
+        TEST_UNIT_PATH="$M_TESTS_FOLDER/test_units/${REF_TEST_UNIT}.test_unit"
+        ARGS="$TEST_UNIT_PATH"
+        if test -e "$TEST_UNIT_PATH"/configure
         then
-            CONFIGURE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/configure
-            ARGS="$M_TESTS_FOLDER/test_units/$REF_TEST_UNIT"
+            CONFIGURE="$TEST_UNIT_PATH"/configure
         fi
-        if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
+        if test -e "$TEST_UNIT_PATH"/Makefile
         then
-            MAKEFILE="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/Makefile
+            MAKEFILE="$TEST_UNIT_PATH"/Makefile
         fi
-        if test -e "$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/gen_test_exec_commands.sh
+        if test -e "$TEST_UNIT_PATH"/gen_test_exec_commands.sh
         then
-            GEN_TESTS="$M_TESTS_FOLDER"/test_units/"$REF_TEST_UNIT"/gen_test_exec_commands.sh
+            GEN_TESTS="$TEST_UNIT_PATH"/gen_test_exec_commands.sh
         fi
     fi
     if test -e configure
     then
         CONFIGURE=./configure
-        ARGS=
     fi
     if test -e Makefile
     then
