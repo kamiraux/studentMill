@@ -1,0 +1,5 @@
+malloc
+free
+read
+write
+some_other_authorized_function
