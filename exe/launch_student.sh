@@ -468,9 +468,9 @@ else
                                 SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
                                 popd
                                 current_test_result=false
-                                error_message="${error_message}Program received signal '$SIGNAL'"$'\n'""$'\n'""
+                                error_message="${error_message}Program received signal '$SIGNAL'"$'\n'$'\n'
                             else
-                                error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'""$'\n'""
+                                error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'$'\n'
                             fi
                         fi
                     fi
@@ -483,10 +483,10 @@ else
                             DIFF=`echo "$DIFF" | cat -v`
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
-                                error_message="${error_message}Standard outputs differ:"$'\n'""
-                                error_message="${error_message}${DIFF}"$'\n'""$'\n'""
+                                error_message="${error_message}Standard outputs differ:"$'\n'
+                                error_message="${error_message}${DIFF}"$'\n'$'\n'
                             else
-                                error_message="${error_message}Standard outputs differ."$'\n'""$'\n'""
+                                error_message="${error_message}Standard outputs differ."$'\n'$'\n'
                             fi
                         fi
                     fi
@@ -499,10 +499,10 @@ else
                             DIFF=`echo "$DIFF" | cat -v`
                             if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                             then
-                                error_message="${error_message}Error outputs differ:"$'\n'""
-                                error_message="${error_message}${DIFF}"$'\n'""$'\n'""
+                                error_message="${error_message}Error outputs differ:"$'\n'
+                                error_message="${error_message}${DIFF}"$'\n'$'\n'
                             else
-                                error_message="${error_message}Error outputs differ."$'\n'""$'\n'""
+                                error_message="${error_message}Error outputs differ."$'\n'$'\n'
                             fi
                         fi
                     fi
@@ -525,37 +525,35 @@ else
                                 then
                                     if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                     then
-                                        error_message="${error_message}Output file differ:"$'\n'""
-                                        error_message="${error_message}${DIFF}"$'\n'""$'\n'""
+                                        error_message="${error_message}Output file differ:"$'\n'
+                                        error_message="${error_message}${DIFF}"$'\n'$'\n'
                                     else
-                                        error_message="${error_message}Output file differ."$'\n'""$'\n'""
+                                        error_message="${error_message}Output file differ."$'\n'$'\n'
                                     fi
                                 else
-                                    error_message="${error_message}Output file has not been created correctly."$'\n'""$'\n'""
+                                    error_message="${error_message}Output file has not been created correctly."$'\n'$'\n'
                                 fi
                             fi
                         done < "$test_id_file.diff_comp"
-                    else
-                        if test -e "$test_id_file.ref"
+                    elif test -e "$test_id_file.ref"
+                    then
+                        DIFF=`diff -u --label ref --label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
+                        DIFF_RET=$?
+                        if test "$DIFF_RET" != 0
                         then
-                            DIFF=`diff -u --label ref --label my "$test_id_file.ref" "${TMP_TEST_DIR}/${test_dir}/${test_id}.my"`
-                            DIFF_RET=$?
-                            if test "$DIFF_RET" != 0
+                            current_test_result=false
+                            DIFF=`echo "$DIFF" | cat -v`
+                            if test "$DIFF_RET" = 1
                             then
-                                current_test_result=false
-                                DIFF=`echo "$DIFF" | cat -v`
-                                if test "$DIFF_RET" = 1
+                                if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
                                 then
-                                    if test ${#DIFF} -lt $M_MAX_DISPLAY_DIFF_LENGTH
-                                    then
-                                        error_message="${error_message}Output file differ:"$'\n'""
-                                        error_message="${error_message}${DIFF}"$'\n'""$'\n'""
-                                    else
-                                        error_message="${error_message}Output file differ."$'\n'""$'\n'""
-                                    fi
+                                    error_message="${error_message}Output file differ:"$'\n'
+                                    error_message="${error_message}${DIFF}"$'\n'""$'\n'
                                 else
-                                    error_message="${error_message}Output file has not been created correctly."$'\n'""$'\n'""
+                                    error_message="${error_message}Output file differ."$'\n'$'\n'
                                 fi
+                            else
+                                error_message="${error_message}Output file has not been created correctly."$'\n'$'\n'
                             fi
                         fi
                     fi
