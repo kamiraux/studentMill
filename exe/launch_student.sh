@@ -285,13 +285,13 @@ else
                 REQUIRED_DATA=`cat required_data`
                 if test "$REQUIRED_DATA" = "all"
                 then
-                    cp -rf "$M_TESTS_FOLDER"/test_data "${TMP_TEST_DIR}/${test_dir}"
+                    cp -rf "$M_TESTS_FOLDER/test_data/." "${TMP_TEST_DIR}/${test_dir}"
                 else
                     OLD_IFS="$IFS"
                     IFS=$'\n'
                     for line in $REQUIRED_DATA
                     do
-                        DIR="${TMP_TEST_DIR}/${test_dir}/test_data/"`dirname "$line"`
+                        DIR="${TMP_TEST_DIR}/${test_dir}/"`dirname "$line"`
                         test -d "$DIR" || mkdir -p "$DIR"
                         cp -rf "$M_TESTS_FOLDER/test_data/$line" "$DIR"
                     done
