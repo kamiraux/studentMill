@@ -8,8 +8,14 @@ MOULETTE
     [ ] Network isolation
     [ ] Syscall catch
     [ ] Memory limit management
+    [ ] Disk limit management
 
 [X] Use a config file
+
+[X] Parallel execution
+    [X] Student parallelization
+    [X] Configurable number of workers
+    [X] Possibility for a test not to be parallelized
 
 [X] Pre process
     [X] Pre-compilation of test files
@@ -96,3 +102,8 @@ MOULETTE
     [X] Generate trace
         [X] Call trace generator
         [X] Possibility to have multiple fomat of trace using a trace generator for each one
+
+
+[X] Examples
+    [X] Configuration file example
+    [X] Test-suite example/skeleton
