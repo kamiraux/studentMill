@@ -2,16 +2,17 @@
 
 ##### Sandboxed calls !
 
-if test $# -lt 2
+if test $# -lt 3
 then
     echo too few arguments >&2
-    echo Usage: ./launch config_file_abs login_x >&2
+    echo Usage: ./launch config_file_abs login_x id_worker >&2
 else
     # Constatnts
     TIMEOUT_EXEC_ABS_RATIO=3
     # End
 
     LOGIN=$2
+    ID_WORKER=$3
     cd `dirname "$1"`
     source `basename "$1"`
     #source "$1"
@@ -32,10 +33,25 @@ else
     rm -rf check
 
     echo "Creating temporary directory for tests"
-    TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
-    TESTS_RESULTS="${TMP_TEST_DIR}/results"
-    mkdir -p "$TESTS_RESULTS"
+
+    if test "$M_REMOTE" = true
+    then
+        ### Remote selection
+        NB_REMOTES=`ls "$M_REMOTE_DIR/list" | wc -l | sed 's/ *//g'`
+        CUR_REMOTE=$(($ID_WORKER % $NB_REMOTES))
+        REMOTE_ADDR=`cat "$M_REMOTE_DIR/list/$CUR_REMOTE"`
+
+        ### Create tmp test dir on remote fs
+        TMP_TEST_DIR=`mktemp -d "$M_REMOTE_DIR/sshfs/$CUR_REMOTE/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
+        LOCAL_TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
+    else
+        TMP_TEST_DIR=`mktemp -d "/tmp/${M_PROJECT_NAME}_${M_RTOKEN}/${LOGIN}-XXXX"`
+        LOCAL_TMP_TEST_DIR=$TMP_TEST_DIR
+    fi
     chmod 711 "$TMP_TEST_DIR"
+
+    TESTS_RESULTS="${LOCAL_TMP_TEST_DIR}/results"
+    mkdir -p "$TESTS_RESULTS"
 
 
     # Sanity check
@@ -65,14 +81,40 @@ else
 
     # Create user login_x
     echo "Creating user '$LOGIN'"
-    ## For freeBSD
-    pw groupadd "$LOGIN"
-    pw useradd  "$LOGIN" -g "$LOGIN"
-    USER_ID=`id -u "$LOGIN"`
-    test -d /home/"$LOGIN" || mkdir /home/"$LOGIN"
-    chown "$LOGIN:$LOGIN" /home/"$LOGIN"
-    chmod 100 /home/"$LOGIN"
-    ##
+
+    LOCAL_ARCH=`uname`
+    if test "$LOCAL_ARCH" = FreeBSD
+    then
+        ## For FreeBSD
+        pw groupadd "$LOGIN"
+        pw useradd  "$LOGIN" -g "$LOGIN"
+        USER_ID=`id -u "$LOGIN"`
+        test -d /home/"$LOGIN" || mkdir /home/"$LOGIN"
+        chown "$LOGIN:$LOGIN" /home/"$LOGIN"
+        chmod 100 /home/"$LOGIN"
+    elif test "$LOCAL_ARCH" = Linux
+    then
+        ## For Linux
+        useradd  "$LOGIN"
+        USER_ID=`id -u "$LOGIN"`
+        test -d /home/"$LOGIN" || mkdir /home/"$LOGIN"
+        chown "$LOGIN:$LOGIN" /home/"$LOGIN"
+        chmod 100 /home/"$LOGIN"
+    else
+        echo "Unsuported local architecture" >2
+        exit 2
+    fi
+
+    ### Create remote user
+    if test "$M_REMOTE_ARCH" = OpenBSD
+    then
+        ## For OpenBSD
+        REMOTE_USER_ID=`ssh root@"$REMOTE_ADDR" "useradd  '$LOGIN' > /dev/null 2>&1;
+          id -u '$LOGIN'"`
+    else
+        echo "Unsuported remote architecture" >2
+        exit 2
+    fi
 
     echo "Creating compilation directory"
     mkdir "$USER_COMP_DIR"
@@ -134,7 +176,9 @@ else
                 "${M_TESTS_FOLDER}/comp_units/${comp_unit}/compile_student.sh" "${M_MAKE}" \
                 | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
             popd
-            # TODO: kill remaining processes
+            # Kill every remaining processes
+            killall -9 -u "$LOGIN"
+
         fi
 
 
@@ -194,9 +238,6 @@ else
     #then
     #    exit 2
     #fi
-
-    TESTS_RESULTS="${TMP_TEST_DIR}/results"
-    mkdir -p "$TESTS_RESULTS"
 
     # Launch
     echo "--- Tests ---"
@@ -277,6 +318,13 @@ else
 #            chmod -R 711 "${M_TESTS_FOLDER}/${test_dir}"
             popd # Come back from test binary directory
 
+### TODO: Launch remote link if enabled
+            if test "$M_REMOTE" = true
+            then
+                R_TEST_BIN_PATH=${M_REMOTE_ROOT}${TEST_BIN_PATH#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
+                ssh root@"$REMOTE_ADDR" "cd '$R_TEST_BIN_PATH'; gcc -o test_bin *.o"
+
+            fi
 
             # Copy test_data
             if test -e required_data
@@ -391,29 +439,62 @@ else
                     test -e "${test_id_file}.arg" \
                         && TEST_ARGS=`cat "${test_id_file}.arg"`
 
-                    if test -e "${test_id_file}.in"
+		    echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
+                    if test "$M_REMOTE" = true
                     then
-			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
-                        cat "${test_id_file}.in" | "$M_MOULETTE_ASSETS/exe/sandbox" \
-                            "$TEST_OUT/$test_id.out" \
-                            "$TEST_OUT/$test_id.err" \
-                            "$TEST_OUT/$test_id.ret" \
-                            $USER_ID \
-                            "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                        # REMOTE EXECUTION
+
+
+                        R_CD=${M_REMOTE_ROOT}${TMP_TEST_DIR#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}/${test_dir}
+                        R_TEST_OUT=${M_REMOTE_ROOT}${TEST_OUT#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
+                        R_TEST_BIN_PATH=${M_REMOTE_ROOT}${TEST_BIN_PATH#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
+                        if test -e "${test_id_file}.in"
+                        then
+                            cat "${test_id_file}.in" \
+                                | ssh root@"$REMOTE_ADDR" \
+                                "cd '$R_CD'; '$M_REMOTE_MOULETTE_ASSETS/exe/sandbox'
+                                '$R_TEST_OUT/$test_id.out'
+                                '$R_TEST_OUT/$test_id.err'
+                                '$R_TEST_OUT/$test_id.ret'
+                                $REMOTE_USER_ID
+                                '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS
+                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT"
+                        else
+                            ssh root@"$REMOTE_ADDR" \
+                                "cd '$R_CD'; '$M_REMOTE_MOULETTE_ASSETS/exe/sandbox'
+                                '$R_TEST_OUT/$test_id.out'
+                                '$R_TEST_OUT/$test_id.err'
+                                '$R_TEST_OUT/$test_id.ret'
+                                $REMOTE_USER_ID
+                                '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS
+                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT"
+                        fi
                     else
-			echo "$TEST_BIN_PATH/$test_command" $TEST_ARGS
-                        "$M_MOULETTE_ASSETS/exe/sandbox" \
-                            "$TEST_OUT/$test_id.out" \
-                            "$TEST_OUT/$test_id.err" \
-                            "$TEST_OUT/$test_id.ret" \
-                            $USER_ID \
-                            "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
-                            | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                        # LOCAL EXECUTION
+                        if test -e "${test_id_file}.in"
+                        then
+                            cat "${test_id_file}.in" | "$M_MOULETTE_ASSETS/exe/sandbox" \
+                                "$TEST_OUT/$test_id.out" \
+                                "$TEST_OUT/$test_id.err" \
+                                "$TEST_OUT/$test_id.ret" \
+                                $USER_ID \
+                                "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
+                                | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                        else
+                            "$M_MOULETTE_ASSETS/exe/sandbox" \
+                                "$TEST_OUT/$test_id.out" \
+                                "$TEST_OUT/$test_id.err" \
+                                "$TEST_OUT/$test_id.ret" \
+                                $USER_ID \
+                                "$TEST_BIN_PATH/$test_command" $TEST_ARGS \
+                                | "$M_MOULETTE_ASSETS/exe/kill_timeout.sh" $EXEC_TIMEOUT $ABS_TIMEOUT
+                        fi
+
+                        # Kill every remaining processes
+                        killall -9 -u "$LOGIN"
                     fi
 
-                    # Kill every remaining processes
-                    killall -9 -u "$LOGIN"
+
                     IFS=$'\n'
                 done
                 IFS="$OLD_IFS"
@@ -465,7 +546,12 @@ else
                             then
                                 SIGNAL=$(($STU_RET - 1000))
                                 pushd "$M_MOULETTE_ASSETS"
-                                SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                                if test "$M_REMOTE" = true
+                                then
+                                    SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_REMOTE_ARCH"`
+                                else
+                                    SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                                fi
                                 popd
                                 current_test_result=false
                                 error_message="${error_message}Program received signal '$SIGNAL'"$'\n'$'\n'

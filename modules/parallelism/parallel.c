@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         nb_child--;
 
     // Launch new worker
-    launch_worker(&args, work);
+    launch_worker(&args, work, nb_child);
   }
 
   // Wait for remaining child processes
@@ -71,7 +71,7 @@ char*   is_work_remaining()
   return work;
 }
 
-void launch_worker(s_args* args, char* work)
+void launch_worker(s_args* args, char* work, char id)
 {
   pid_t pid = 0;
 
@@ -86,14 +86,17 @@ void launch_worker(s_args* args, char* work)
   }
   else
   {//son
+    char id_worker[] = "0";
     char *aargs[5] =
       {
         "modules/parallelism/launch_student_redir_wrapper.sh",
         args->log,
         args->conf,
         work,
+        id_worker,
         NULL
       };
+    id_worker[0] = id + '0';
     execv(aargs[0], aargs);
   }
 }

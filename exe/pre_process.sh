@@ -49,6 +49,10 @@ do
             GEN_TESTS="$TEST_UNIT_PATH"/gen_test_exec_commands.sh
         fi
     fi
+
+    export M_REMOTE_DIR
+    export M_REMOTE_ROOT
+
     if test -e configure
     then
         CONFIGURE=./configure

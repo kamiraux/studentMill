@@ -7,7 +7,7 @@ typedef struct args
     char *log;
 } s_args;
 
-void    launch_worker(s_args* args, char* work);
+void    launch_worker(s_args* args, char* work, char id);
 char*   is_work_remaining();
 
 #endif /* !PARALLEL_H_ */
