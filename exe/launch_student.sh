@@ -323,7 +323,6 @@ else
             then
                 R_TEST_BIN_PATH=${M_REMOTE_ROOT}${TEST_BIN_PATH#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
                 ssh root@"$REMOTE_ADDR" "cd '$R_TEST_BIN_PATH'; gcc -o test_bin *.o"
-
             fi
 
             # Copy test_data
@@ -448,7 +447,13 @@ else
                         R_CD=${M_REMOTE_ROOT}${TMP_TEST_DIR#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}/${test_dir}
                         R_TEST_OUT=${M_REMOTE_ROOT}${TEST_OUT#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
                         R_TEST_BIN_PATH=${M_REMOTE_ROOT}${TEST_BIN_PATH#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
-                        if test -e "${test_id_file}.in"
+
+                        if test -e no_isolation
+                        then
+                            ssh root@"$REMOTE_ADDR" "cd '$R_TEST_BIN_PATH';
+                                '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS > '$R_TEST_OUT/$test_id.out' 2> '$R_TEST_OUT/$test_id.err';
+                                echo $? > '$R_TEST_OUT/$test_id.ret'"
+                        elif test -e "${test_id_file}.in"
                         then
                             cat "${test_id_file}.in" \
                                 | ssh root@"$REMOTE_ADDR" \
@@ -458,7 +463,7 @@ else
                                 '$R_TEST_OUT/$test_id.ret'
                                 $REMOTE_USER_ID
                                 '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS
-                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT"
+                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT; killall -9 -u '$LOGIN'"
                         else
                             ssh root@"$REMOTE_ADDR" \
                                 "cd '$R_CD'; '$M_REMOTE_MOULETTE_ASSETS/exe/sandbox'
@@ -467,7 +472,7 @@ else
                                 '$R_TEST_OUT/$test_id.ret'
                                 $REMOTE_USER_ID
                                 '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS
-                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT"
+                                | '$M_REMOTE_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT; killall -9 -u '$LOGIN'"
                         fi
                     else
                         # LOCAL EXECUTION
@@ -493,6 +498,55 @@ else
                         # Kill every remaining processes
                         killall -9 -u "$LOGIN"
                     fi
+
+#######################
+                    if false; then
+
+                        if test "$M_REMOTE" = true
+                        then
+                            # REMOTE EXECUTION
+                            R_CD=${M_REMOTE_ROOT}${TMP_TEST_DIR#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}/${test_dir}
+                            R_TEST_OUT=${M_REMOTE_ROOT}${TEST_OUT#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
+                            R_TEST_BIN_PATH=${M_REMOTE_ROOT}${TEST_BIN_PATH#$M_REMOTE_DIR/sshfs/$CUR_REMOTE/}
+                            R_USER_ID=$REMOTE_USER_ID
+                            R_MOULETTE_ASSETS=$M_REMOTE_MOULETTE_ASSETS
+
+                            CD_COMMAND="cd '$R_CD';"
+                            COMMAND_EXEC="ssh root@${REMOTE_ADDR}"
+                        else
+                            # LOCAL EXECUTION
+                            R_TEST_OUT=${TEST_OUT}
+                            R_TEST_BIN_PATH=${TEST_BIN_PATH}
+                            R_USER_ID=$USER_ID
+                            R_MOULETTE_ASSETS=$M_MOULETTE_ASSETS
+
+                            CD_COMMAND=
+                            COMMAND_EXEC='/usr/bin/env bash'
+
+                        fi
+
+                        #INPUT_PIPE="cat '${test_id_file}.in' | "
+
+                        # TODO: escape single quotes in names
+                        # (i.e. replace ' by '"'"')
+
+                        COMMAND_ARGS="${CD_COMMAND}'$R_MOULETTE_ASSETS/exe/sandbox'
+                                '$R_TEST_OUT/$test_id.out'
+                                '$R_TEST_OUT/$test_id.err'
+                                '$R_TEST_OUT/$test_id.ret'
+                                $R_USER_ID
+                                '$R_TEST_BIN_PATH/$test_command' $TEST_ARGS
+                                | '$R_MOULETTE_ASSETS/exe/kill_timeout.sh' $EXEC_TIMEOUT $ABS_TIMEOUT"
+
+                        if test -e "${test_id_file}.in"
+                        then
+                            cat "${test_id_file}.in" | $COMMAND_EXEC "$COMMAND_ARGS"
+                        else
+                            $COMMAND_EXEC "$COMMAND_ARGS"
+                        fi
+
+                    fi
+#######################
 
 
                     IFS=$'\n'
@@ -553,10 +607,33 @@ else
                                     SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
                                 fi
                                 popd
-                                current_test_result=false
                                 error_message="${error_message}Program received signal '$SIGNAL'"$'\n'$'\n'
                             else
-                                error_message="${error_message}Wrong exit code: sould be '$REF_RET' but mine is '$STU_RET'"$'\n'$'\n'
+                                if test "$REF_RET" != ""
+                                then
+                                    error_message="${error_message}Wrong exit code: should be '$REF_RET' but mine is '$STU_RET'"$'\n'$'\n'
+                                fi
+                            fi
+                        fi
+                    elif test -e "$test_id_file.sig"
+                    then
+                        REF_RET=`cat "$test_id_file.sig"`
+                        STU_RET=`cat "$test_output_file.ret"`
+                        if test "$REF_RET" != "$STU_RET"
+                        then
+                            if test "$STU_RET" -ge 1000
+                            then
+                                current_test_result=false
+                                SIGNAL=$(($STU_RET - 1000))
+                                pushd "$M_MOULETTE_ASSETS"
+                                if test "$M_REMOTE" = true
+                                then
+                                    SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_REMOTE_ARCH"`
+                                else
+                                    SIGNAL=`exe/get_sig_by_id.sh "$SIGNAL" "$M_ARCH"`
+                                fi
+                                popd
+                                error_message="${error_message}Program received signal '$SIGNAL'"$'\n'$'\n'
                             fi
                         fi
                     fi
