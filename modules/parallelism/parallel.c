@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
 static int nb_child = 0;
@@ -15,6 +14,10 @@ int main(int argc, char **argv)
   s_args        args = { 0, 0 };
   char*         work = 0;
   int           status = 0;
+  pid_t         pid = -1;
+  pid_t*        workers = 0;;
+  int           i = 0;
+
   if (argc < 3)
   {
     printf("Usage: %s NB_WORKER CONF_ABS LOG\n", argv[0]);
@@ -26,16 +29,40 @@ int main(int argc, char **argv)
   args.conf = argv[2];
   args.log = argv[3];
 
+  if (!(workers = malloc(nb_worker * sizeof(pid_t))))
+    exit(2);
+
+  for (i = 0; i < nb_worker; ++i)
+    workers[i] = -1;
+
+  i = 0;
   while ((work = is_work_remaining()))
   {
     // Wait for a free slot
     while (nb_child >= nb_worker)
       // wait for a child to end
-      if (wait(&status) > 0 && (WIFEXITED(status) || WIFSIGNALED(status)))
+      if ((pid = wait(&status)) > 0 && (WIFEXITED(status) || WIFSIGNALED(status)))
+      {
         nb_child--;
+        for (i = 0; i < nb_worker; ++i)
+          if (workers[i] == pid)
+          {
+            workers[i] = -1;
+            break;
+          }
+      }
 
     // Launch new worker
-    launch_worker(&args, work, nb_child);
+    if (i < nb_worker && workers[i] == -1)
+      workers[i] = launch_worker(&args, work, i);
+    else
+      for (i = 0; i < nb_worker; ++i)
+        if (workers[i] == -1)
+        {
+          workers[i] = launch_worker(&args, work, i);
+          break;
+        }
+    ++i;
   }
 
   // Wait for remaining child processes
@@ -71,7 +98,7 @@ char*   is_work_remaining()
   return work;
 }
 
-void launch_worker(s_args* args, char* work, char id)
+pid_t launch_worker(s_args* args, char* work, char id)
 {
   pid_t pid = 0;
 
@@ -83,20 +110,21 @@ void launch_worker(s_args* args, char* work, char id)
   {//father
     nb_child++;
     printf("%s\n", work);
+    return pid;
   }
   else
   {//son
-    char id_worker[] = "0";
-    char *aargs[5] =
+    char *aargs[6] =
       {
         "modules/parallelism/launch_student_redir_wrapper.sh",
         args->log,
         args->conf,
         work,
-        id_worker,
+        NULL,
         NULL
       };
-    id_worker[0] = id + '0';
+    asprintf(aargs + 4, "%d", id);
     execv(aargs[0], aargs);
+    return pid;
   }
 }
